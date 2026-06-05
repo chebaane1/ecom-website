@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{% block title %}Boutique - Tunisie{% endblock %}</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <script src="https://unpkg.com/alpinejs@3.12.0/dist/cdn.min.js" defer></script>
+</head>
+<body class="bg-gray-100 text-gray-900">
+  <header class="bg-white shadow">
+    <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+      <a href="{% url 'core:product_list' %}" class="text-2xl font-semibold">Boutique Tunisie</a>
+      <nav class="space-x-4">
+        <a href="{% url 'core:product_list' %}" class="text-gray-700 hover:text-black">Accueil</a>
+        <a href="{% url 'core:cart_detail' %}" class="text-gray-700 hover:text-black">Panier</a>
+        {% if request.user.is_staff %}
+          <a href="{% url 'core:manager_dashboard' %}" class="text-gray-700 hover:text-black">Manager</a>
+        {% endif %}
+      </nav>
+    </div>
+  </header>
+
+  <main class="container mx-auto px-4 py-8">
+    {% if messages %}
+      <div class="mb-4">
+        {% for message in messages %}
+          <div class="p-3 rounded {{ message.tags }} bg-green-50 border border-green-200 text-green-800 mb-2">
+            {{ message }}
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="bg-white border-t mt-12 py-6">
+    <div class="container mx-auto px-4 text-sm text-gray-600">
+      &copy; {{ now.year }} Boutique Tunisie — Paiement à la livraison
+    </div>
+  </footer>
+</body>
+</html>

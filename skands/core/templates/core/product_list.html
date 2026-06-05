@@ -1,0 +1,121 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Accueil — Boutique{% endblock %}
+
+{% block content %}
+  <!-- Hero (mode) -->
+  <section class="relative bg-cover bg-center rounded-lg overflow-hidden mb-8" style="background-image: url('https://images.unsplash.com/photo-1520975919642-2b2f9f6b7b2b?auto=format&fit=crop&w=1600&q=80'); height:460px;">
+    <div class="absolute inset-0 bg-black bg-opacity-45"></div>
+    <div class="relative z-10 container mx-auto px-4 h-full flex items-center">
+      <div class="text-white max-w-2xl">
+        <h1 class="text-4xl md:text-5xl font-bold leading-tight mb-4">Collection Printemps — Boutique Tunisie</h1>
+        <p class="mb-6 text-lg">Pièces élégantes, matières responsables — découvrez nos nouveautés mode pour femmes et hommes.</p>
+        <a href="#featured" class="bg-white text-gray-900 px-5 py-3 rounded font-medium shadow hover:opacity-90">Acheter la collection</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured products (Nouveautés) -->
+  <section id="featured" class="mb-12">
+    <h2 class="text-2xl font-bold mb-4">Nouveautés</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {% for product in products|slice:":3" %}
+        <div class="bg-white rounded overflow-hidden shadow-lg">
+          <a href="{% url 'core:product_detail' product.pk %}">
+            {% if product.images.all %}
+              <img src="{{ product.images.all.0.image.url }}" alt="{{ product.images.all.0.alt_text }}" class="w-full h-64 object-cover">
+            {% else %}
+              <div class="w-full h-64 bg-gray-200 flex items-center justify-center text-gray-500">Pas d'image</div>
+            {% endif %}
+          </a>
+          <div class="p-4">
+            <h3 class="text-lg font-semibold"><a href="{% url 'core:product_detail' product.pk %}">{{ product.name }}</a></h3>
+            <div class="text-sm text-gray-600 mt-2">{{ product.description|truncatechars:90 }}</div>
+            <div class="mt-4 flex items-center justify-between">
+              <div class="text-xl font-semibold">{{ product.price }} TND</div>
+              <form action="{% url 'core:cart_add' %}" method="post" class="flex items-center">
+                {% csrf_token %}
+                <input type="hidden" name="product_id" value="{{ product.pk }}">
+                <input type="hidden" name="quantity" value="1">
+                <button type="submit" class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">Ajouter</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      {% empty %}
+        <p>Aucun produit en vedette pour le moment.</p>
+      {% endfor %}
+    </div>
+  </section>
+
+  <!-- Categories (mode) -->
+  <section class="mb-12">
+    <h2 class="text-2xl font-bold mb-4">Collections</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+      <a href="#" class="group block bg-white rounded overflow-hidden shadow hover:shadow-lg">
+        <div class="h-44 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1514996937319-344454492b37?auto=format&fit=crop&w=800&q=60');"></div>
+        <div class="p-4">
+          <h3 class="font-semibold">Femmes</h3>
+          <p class="text-sm text-gray-600">Robes, tops et accessoires.</p>
+        </div>
+      </a>
+      <a href="#" class="group block bg-white rounded overflow-hidden shadow hover:shadow-lg">
+        <div class="h-44 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1503341455253-b2e723bb3dbb?auto=format&fit=crop&w=800&q=60');"></div>
+        <div class="p-4">
+          <h3 class="font-semibold">Hommes</h3>
+          <p class="text-sm text-gray-600">Chemises, pantalons et pièces essentielles.</p>
+        </div>
+      </a>
+      <a href="#" class="group block bg-white rounded overflow-hidden shadow hover:shadow-lg">
+        <div class="h-44 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1491553895911-0055eca6402d?auto=format&fit=crop&w=800&q=60');"></div>
+        <div class="p-4">
+          <h3 class="font-semibold">Nouveautés</h3>
+          <p class="text-sm text-gray-600">Les dernières pièces ajoutées.</p>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- Newsletter (VIP) -->
+  <section class="bg-white rounded p-6 mb-12 shadow">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+      <div>
+        <h3 class="text-xl font-semibold">Rejoignez notre liste VIP</h3>
+        <p class="text-sm text-gray-600">Avant-premières, ventes privées et codes promo exclusifs.</p>
+      </div>
+      <form action="#" method="post" class="mt-4 md:mt-0 flex">
+        <input type="email" name="email" placeholder="Votre adresse email" class="border rounded-l px-4 py-2 w-72" required>
+        <button type="submit" class="bg-gray-900 text-white px-4 py-2 rounded-r">Je m'inscris</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- Tous les produits -->
+  <h2 class="text-2xl font-bold mb-6">Tous les produits</h2>
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    {% for product in products %}
+      <div class="bg-white p-4 rounded shadow">
+        <a href="{% url 'core:product_detail' product.pk %}">
+          {% if product.images.all %}
+            <img src="{{ product.images.all.0.image.url }}" alt="{{ product.images.all.0.alt_text }}" class="w-full h-56 object-cover mb-3 rounded">
+          {% else %}
+            <div class="w-full h-56 bg-gray-200 mb-3 rounded flex items-center justify-center text-gray-500">Pas d'image</div>
+          {% endif %}
+        </a>
+        <h2 class="text-lg font-medium"><a href="{% url 'core:product_detail' product.pk %}">{{ product.name }}</a></h2>
+        <p class="text-sm text-gray-600 mt-2">{{ product.description|truncatechars:120 }}</p>
+        <div class="mt-4 flex items-center justify-between">
+          <div class="text-xl font-semibold">{{ product.price }} TND</div>
+          <form action="{% url 'core:cart_add' %}" method="post" class="flex items-center">
+            {% csrf_token %}
+            <input type="hidden" name="product_id" value="{{ product.pk }}">
+            <input type="hidden" name="quantity" value="1">
+            <button type="submit" class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">Ajouter</button>
+          </form>
+        </div>
+      </div>
+    {% empty %}
+      <p>Aucun produit disponible pour le moment.</p>
+    {% endfor %}
+  </div>
+{% endblock %}

@@ -112,6 +112,7 @@ if VERCEL_DB_URL:
         conn_max_age=600,
         ssl_require=True
     )
+    
 else:
     # En développement local (chez vous) : on utilise SQLite pour la simplicité
     DATABASES['default'] = {

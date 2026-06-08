@@ -31,7 +31,7 @@
       <div class="flex items-center justify-between gap-4 lg:gap-10">
     
         <a href="{% url 'core:home' %}" class="flex-shrink-0" aria-label="SKANDS — Accueil">
-          <img src="{% static 'core/images/logo.jpg' %}" alt="SKANDS" class="h-11 w-11 sm:h-12 sm:w-12 rounded-full object-cover">
+          <img src="{% static 'core/images/logo.jpg' %}" alt="SKANDS" class="h-11 w-11 sm:h-12 sm:w-12 rounded-xl object-cover">
         </a>
     
         <form action="{% url 'core:product_list' %}" method="get" class="hidden md:block flex-1 max-w-lg mx-auto">          <div class="relative w-full">
@@ -77,7 +77,21 @@
     
       </div>
     </div>
-
+    <div class="block md:hidden px-4 pb-3">
+      <form action="{% url 'core:product_list' %}" method="get" class="w-full">
+        <div class="relative w-full">
+          <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+          </svg>
+          <input
+            type="search"
+            name="q"
+            placeholder="Rechercher robes, sacs, chaussures…"
+            class="w-full pl-11 pr-4 py-2.5 rounded-full border border-gray-300 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:border-gray-400 bg-gray-50"
+          >
+        </div>
+      </form>
+    </div>
     <!-- Menu catégories -->
     <nav class="border-t border-gray-100">
       <div class="max-w-7xl mx-auto px-4 sm:px-6">

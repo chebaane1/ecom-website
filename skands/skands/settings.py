@@ -102,15 +102,18 @@ DATABASES = {
     }
 }
 
-# Si le projet tourne sur Vercel, on utilise l'URL fournie par Vercel
-if os.environ.get('POSTGRES_URL'):
+# On récupère la variable spécifique générée par Vercel
+VERCEL_DB_URL = os.environ.get('postgres_DATABASE_URL')
+
+if VERCEL_DB_URL:
+    # En production (Vercel) : dj-database-url découpe l'URL pour configurer Django
     DATABASES['default'] = dj_database_url.config(
-        env='POSTGRES_URL',
+        default=VERCEL_DB_URL,
         conn_max_age=600,
         ssl_require=True
     )
 else:
-    # Votre configuration locale (ex: SQLite pour le développement local, ou un Postgres local)
+    # En développement local (chez vous) : on utilise SQLite pour la simplicité
     DATABASES['default'] = {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),

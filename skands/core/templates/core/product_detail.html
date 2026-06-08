@@ -1,0 +1,103 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}{{ product.name }} — Boutique{% endblock %}
+
+{% block content %}
+  <div class="bg-white rounded-lg shadow p-6 mb-8">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <!-- Gallery -->
+      <div x-data="{ images: [{% for img in product.images.all %}'{{ img.image.url }}'{% if not forloop.last %}, {% endif %}{% endfor %}], current: 0 }">
+        <div class="bg-gray-100 rounded overflow-hidden flex items-center justify-center h-96">
+          <template x-if="images.length">
+            <img :src="images[current]" alt="{{ product.name }}" class="w-full h-full object-contain">
+          </template>
+          {% if not product.images.all %}
+            <img src="{% static 'core/images/product-placeholder.svg' %}" alt="Pas d'image" class="w-full h-full object-contain">
+          {% endif %}
+        </div>
+
+        <div class="mt-4 flex gap-3 overflow-x-auto">
+          <template x-for="(img, i) in images" :key="i">
+            <img :src="img" @click="current = i" class="w-20 h-20 object-cover rounded cursor-pointer border" :class="{'ring-2 ring-indigo-500': current === i}">
+          </template>
+        </div>
+      </div>
+
+      <!-- Product info -->
+      <div>
+        <h1 class="text-2xl font-extrabold text-gray-900 mb-2">{{ product.name }}</h1>
+        <div class="flex items-baseline gap-3 mb-4">
+          <span class="text-3xl font-extrabold text-gray-900">{{ product.price }} TND</span>
+          {% if product.old_price %}
+            <span class="text-sm text-pink-400 line-through">{{ product.old_price }} TND</span>
+          {% endif %}
+        </div>
+
+        <div class="text-gray-700 mb-6">{{ product.description|linebreaksbr }}</div>
+
+        <form action="{% url 'core:cart_add' %}" method="post" class="mb-6">
+          {% csrf_token %}
+          <input type="hidden" name="product_id" value="{{ product.pk }}">
+
+          <div class="flex items-center gap-3 mb-4">
+            <label class="text-sm text-gray-700">Quantité</label>
+            <input type="number" name="quantity" value="1" min="1" class="w-20 border rounded px-2 py-1">
+          </div>
+
+          <div class="flex items-center gap-3">
+            <button type="submit" class="bg-indigo-600 text-white px-5 py-2 rounded font-medium hover:bg-indigo-700">Ajouter au panier</button>
+            <a href="{% url 'core:cart_detail' %}" class="ml-2 inline-block px-4 py-2 border rounded">Voir le panier</a>
+            <button type="button" class="ml-auto w-10 h-10 rounded-full bg-white text-gray-500 flex items-center justify-center shadow" aria-label="Ajouter aux favoris">♡</button>
+          </div>
+        </form>
+
+        <div class="text-sm text-gray-500 border-t pt-4 mt-4">
+          <p>Détails du produit</p>
+          <ul class="mt-2 list-disc list-inside">
+            <li>Référence: {{ product.pk }}</li>
+            <li>Ajouté le {{ product.created_at|date:"d/m/Y" }}</li>
+            {% if product.category %}
+              <li>Catégorie: {{ product.category.name }}</li>
+            {% endif %}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% if product.category and product.category.products.count > 1 %}
+    <section class="mb-8">
+      <h3 class="text-xl font-semibold mb-4">Produits similaires</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        {% with product.category.products.all as related_list %}
+        {% for rel in related_list %}
+          {% if rel.pk != product.pk and forloop.counter <= 4 %}
+          <a href="{% url 'core:product_detail' rel.pk %}" class="block bg-white rounded-xl shadow hover:shadow-md transition overflow-hidden border border-gray-200">
+            <div class="relative bg-gray-100">
+              {% with rel.images.all|first as first_img %}
+                {% if first_img %}
+                  <img src="{{ first_img.image.url }}" alt="{{ rel.name }}" class="w-full h-40 object-cover">
+                {% else %}
+                  <img src="{% static 'core/images/product-placeholder.svg' %}" alt="{{ rel.name }}" class="w-full h-40 object-cover">
+                {% endif %}
+              {% endwith %}
+            </div>
+            <div class="p-3">
+              <h4 class="font-semibold text-gray-800 leading-tight h-12 overflow-hidden">{{ rel.name }}</h4>
+              <div class="mt-2 flex items-baseline gap-2">
+                <span class="text-lg font-extrabold text-gray-900">{{ rel.price }} TND</span>
+                {% if rel.old_price %}
+                  <span class="text-sm text-pink-400 line-through">{{ rel.old_price }} TND</span>
+                {% endif %}
+              </div>
+            </div>
+          </a>
+          {% endif %}
+        {% endfor %}
+        {% endwith %}
+      </div>
+    </section>
+  {% endif %}
+
+{% endblock %}

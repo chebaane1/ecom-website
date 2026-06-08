@@ -28,7 +28,7 @@ load_dotenv(BASE_DIR / '.env')
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-change-me')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DJANGO_DEBUG', '1').lower() in ('1', 'true', 'yes', 'on')
+DEBUG = True
 
 ALLOWED_HOSTS = [
     host.strip()
@@ -36,7 +36,7 @@ ALLOWED_HOSTS = [
     if host.strip()
 ]
 
-
+ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [

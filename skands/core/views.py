@@ -12,7 +12,36 @@ from .forms import CheckoutForm, OrderStatusForm
 
 def product_list(request):
     products = Product.objects.filter(is_active=True)
+    print(f"DEBUG: Retrieved {products.count()} active products for product list view.")
     return render(request, 'core/product_list.html', {'products': products})
+
+
+def home(request):
+    """Render the homepage with a selection of products."""
+    products = Product.objects.filter(is_active=True)[:8]
+    featured = products[:4]
+    print(f"DEBUG: Retrieved {products.count()} active products for homepage view.")
+    categories = [
+        {'name': 'Robes', 'icon': 'core/images/svgs/robe.svg'},
+        {'name': 'Tops', 'icon': 'core/images/svgs/top.svg'},
+        {'name': 'Bas', 'icon': 'core/images/svgs/bas.svg'},
+        {'name': 'Sacs', 'icon': 'core/images/svgs/sac.svg'},
+        {'name': 'Chaussures', 'icon': 'core/images/svgs/chaussure.svg'},
+    ]
+    hero_mobile_slides = [
+        {'image': 'core/images/hero-mobile/1.jpg', 'alt': 'Nouvelle collection — Robes'},
+        {'image': 'core/images/hero-mobile/2.jpg', 'alt': 'Sacs & accessoires tendance'}
+    ]
+    return render(
+        request,
+        'core/home.html',
+        {
+            'products': products,
+            'featured': featured,
+            'categories': categories,
+            'hero_mobile_slides': hero_mobile_slides,
+        },
+    )
 
 
 def product_detail(request, pk):

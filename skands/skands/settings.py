@@ -106,6 +106,7 @@ DATABASES = {
 VERCEL_DB_URL = os.environ.get('postgres_DATABASE_URL')
 
 if VERCEL_DB_URL:
+    print("Configuration de la base de données pour Vercel avec PostgreSQL")
     # En production (Vercel) : dj-database-url découpe l'URL pour configurer Django
     DATABASES['default'] = dj_database_url.config(
         default=VERCEL_DB_URL,

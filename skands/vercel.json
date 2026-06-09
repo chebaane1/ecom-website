@@ -1,7 +1,11 @@
 {
   "version": 2,
-  "framework": null,
-  "buildCmd": "python manage.py collectstatic --noinput",
+  "builds": [
+    {
+      "src": "skands/wsgi.py",
+      "use": "@vercel/python"
+    }
+  ],
   "routes": [
     {
       "src": "/static/(.*)",

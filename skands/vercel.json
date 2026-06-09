@@ -1,15 +1,7 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "skands/wsgi.py",
-      "use": "@vercel/python",
-      "config": {
-        "maxDuration": 60,
-        "runtime": "python3.12"
-      }
-    }
-  ],
+  "framework": null,
+  "buildCmd": "python manage.py collectstatic --noinput",
   "routes": [
     {
       "src": "/static/(.*)",

@@ -168,18 +168,21 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 # settings.py
 
+# settings.py
+
 if os.environ.get('VERCEL') == '1':
-    # --- EMPÊCHER LE CRASH SUR LES ASSETS INTERNES DE DJANGO ADMIN ---
+    # On désactive le mode strict par sécurité
     WHITENOISE_MANIFEST_STRICT = False
     
-    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+    # --- MODIFICATION ICI : On utilise le stockage sans post-processing de manifeste lourd ---
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
     
     STORAGES = {
         "default": {
             "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
         },
         "staticfiles": {
-            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+            "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
         },
     }
     

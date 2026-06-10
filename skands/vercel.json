@@ -1,24 +1,3 @@
 {
-  "version": 2,
-  "installCommand": "pip install -r requirements.txt",
-  "buildCommand": "python manage.py collectstatic --noinput --clear && python manage.py migrate --noinput",
-  "builds": [
-    {
-      "src": "skands/wsgi.py",
-      "use": "@vercel/python"
-    }
-  ],
-  "routes": [
-    {
-      "handle": "filesystem"
-    },
-    {
-      "src": "/static/(.*)",
-      "dest": "/staticfiles/$1"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "skands/wsgi.py"
-    }
-  ]
+  "$schema": "https://openapi.vercel.sh/vercel.json"
 }

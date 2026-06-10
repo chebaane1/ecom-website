@@ -47,12 +47,15 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'cloudinary_storage',          # <-- AJOUT ICI
     'django.contrib.staticfiles',
+    'cloudinary',                  # <-- AJOUT ICI
     'core.apps.CoreConfig',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -108,7 +111,6 @@ DATABASES = {
 VERCEL_DB_URL = os.environ.get('postgres_DATABASE_URL')
 
 if VERCEL_DB_URL:
-    print("Configuration de la base de données pour Vercel avec PostgreSQL")
     # En production (Vercel) : dj-database-url découpe l'URL pour configurer Django
     DATABASES['default'] = dj_database_url.config(
         default=VERCEL_DB_URL,
@@ -159,3 +161,16 @@ USE_TZ = True
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+# Gestion des fichiers Médias (Uploads utilisateurs)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+# Si on est sur Vercel, on utilise Cloudinary pour le stockage distant
+if os.environ.get('VERCEL') == '1':
+    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+    CLOUDINARY_STORAGE = {
+        'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME'),
+        'API_KEY': os.environ.get('CLOUDINARY_API_KEY'),
+        'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET'),
+    }

@@ -166,13 +166,14 @@ MEDIA_ROOT = BASE_DIR / 'media'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-# Configuration des Stockages
+# settings.py
+
 if os.environ.get('VERCEL') == '1':
-    # --- PATCH DE COMPATIBILITÉ POUR DJANGO 5.1+ / 6.0+ ---
-    # On recrée l'ancienne variable pour empêcher le crash de django-cloudinary-storage
+    # --- EMPÊCHER LE CRASH SUR LES ASSETS INTERNES DE DJANGO ADMIN ---
+    WHITENOISE_MANIFEST_STRICT = False
+    
     STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
     
-    # Nouvelle configuration de stockage standard Django
     STORAGES = {
         "default": {
             "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
@@ -188,7 +189,6 @@ if os.environ.get('VERCEL') == '1':
         'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET'),
     }
 else:
-    # Stockage local par défaut en développement
     STORAGES = {
         "default": {
             "BACKEND": "django.core.files.storage.FileSystemStorage",

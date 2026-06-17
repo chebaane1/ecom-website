@@ -1,0 +1,30 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Supprimer le Produit — SKANDS{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto py-12">
+  <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden p-6 md:p-8 text-center">
+    <div class="w-16 h-16 bg-red-50 text-red-600 rounded-full flex items-center justify-center mx-auto mb-5">
+      <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+      </svg>
+    </div>
+    
+    <h1 class="text-xl font-bold text-gray-900 mb-2">Supprimer le produit ?</h1>
+    <p class="text-sm text-gray-500 mb-6">
+      Êtes-vous sûr de vouloir supprimer le produit <strong class="text-gray-900 font-semibold">"{{ product.name }}"</strong> ? Cette action est irréversible et supprimera également toutes les images associées.
+    </p>
+
+    <form method="post" class="flex flex-col sm:flex-row gap-3">
+      {% csrf_token %}
+      <a href="{% url 'core:product_manage_list' %}" class="flex-1 px-5 py-2.5 border border-gray-300 rounded-lg text-sm font-semibold text-gray-700 bg-white hover:bg-gray-50 focus:outline-none text-center transition">
+        Annuler
+      </a>
+      <button type="submit" class="flex-1 px-5 py-2.5 border border-transparent rounded-lg shadow-sm text-sm font-semibold text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 text-center transition">
+        Confirmer la suppression
+      </button>
+    </form>
+  </div>
+</div>
+{% endblock %}

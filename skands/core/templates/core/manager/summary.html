@@ -1,0 +1,56 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Statistiques des Ventes — SKANDS{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto py-6">
+  <!-- Onglets d'administration -->
+  <div class="border-b border-gray-200 mb-8">
+    <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+      <a href="{% url 'core:manager_dashboard' %}" class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
+        Commandes
+      </a>
+      <a href="{% url 'core:product_manage_list' %}" class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
+        Produits
+      </a>
+      <a href="{% url 'core:sales_summary' %}" class="border-red-500 text-red-600 whitespace-nowrap py-4 px-1 border-b-2 font-bold text-sm" aria-current="page">
+        Statistiques
+      </a>
+    </nav>
+  </div>
+
+  <div class="mb-6">
+    <h1 class="text-3xl font-extrabold tracking-tight text-gray-900">Statistiques de Vente</h1>
+    <p class="mt-1 text-sm text-gray-500">Vue d'ensemble de l'activité commerciale de la boutique.</p>
+  </div>
+
+  <!-- Grille de cartes statistiques -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <!-- Ventes Totales -->
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex items-center justify-between">
+      <div>
+        <span class="text-sm font-semibold text-gray-400 uppercase tracking-wider block">Ventes Totales</span>
+        <span class="text-3xl font-extrabold text-gray-900 mt-2 block">{{ total_sales }} TND</span>
+      </div>
+      <div class="p-3 bg-green-50 rounded-xl text-green-600">
+        <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      </div>
+    </div>
+
+    <!-- Nombre de commandes -->
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex items-center justify-between">
+      <div>
+        <span class="text-sm font-semibold text-gray-400 uppercase tracking-wider block">Commandes Passées</span>
+        <span class="text-3xl font-extrabold text-gray-900 mt-2 block">{{ order_count }}</span>
+      </div>
+      <div class="p-3 bg-blue-50 rounded-xl text-blue-600">
+        <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+        </svg>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -5,9 +5,9 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.db.models import Sum
 
-from .models import Product, Order, OrderItem
+from .models import Product, Order, OrderItem, ProductImage
 from .cart import Cart
-from .forms import CheckoutForm, OrderStatusForm
+from .forms import CheckoutForm, OrderStatusForm, ProductForm
 
 
 def product_list(request):
@@ -106,13 +106,11 @@ def order_success(request, uuid):
     return render(request, 'core/order_success.html', {'order': order})
 
 
-@user_passes_test(lambda u: u.is_staff)
 def manager_dashboard(request):
     orders = Order.objects.all().order_by('-created_at')[:50]
     return render(request, 'core/manager/dashboard.html', {'orders': orders})
 
 
-@user_passes_test(lambda u: u.is_staff)
 def order_update(request, pk):
     order = get_object_or_404(Order, pk=pk)
     if request.method == 'POST':
@@ -126,8 +124,80 @@ def order_update(request, pk):
     return render(request, 'core/manager/order_update.html', {'order': order, 'form': form})
 
 
-@user_passes_test(lambda u: u.is_staff)
 def sales_summary(request):
     total = Order.objects.aggregate(total_sales=Sum('total_amount'))['total_sales'] or Decimal('0.00')
     count = Order.objects.count()
     return render(request, 'core/manager/summary.html', {'total_sales': total, 'order_count': count})
+
+
+def product_manage_list(request):
+    query = request.GET.get('q', '')
+    if query:
+        products = Product.objects.filter(name__icontains=query)
+    else:
+        products = Product.objects.all()
+    return render(request, 'core/manager/product_manage_list.html', {
+        'products': products,
+        'query': query
+    })
+
+
+def product_create(request):
+    if request.method == 'POST':
+        form = ProductForm(request.POST, request.FILES)
+        if form.is_valid():
+            product = form.save()
+            uploaded_images = request.FILES.getlist('images')
+            for f in uploaded_images:
+                ProductImage.objects.create(product=product, image=f)
+            messages.success(request, f"Produit '{product.name}' créé avec succès.")
+            return redirect(reverse('core:product_manage_list'))
+        else:
+            messages.error(request, "Veuillez corriger les erreurs ci-dessous.")
+    else:
+        form = ProductForm()
+    return render(request, 'core/manager/product_form.html', {
+        'form': form,
+        'action': 'create'
+    })
+
+
+def product_update(request, pk):
+    product = get_object_or_404(Product, pk=pk)
+    if request.method == 'POST':
+        form = ProductForm(request.POST, request.FILES, instance=product)
+        if form.is_valid():
+            product = form.save()
+            uploaded_images = request.FILES.getlist('images')
+            for f in uploaded_images:
+                ProductImage.objects.create(product=product, image=f)
+            messages.success(request, f"Produit '{product.name}' mis à jour avec succès.")
+            return redirect(reverse('core:product_manage_list'))
+        else:
+            messages.error(request, "Veuillez corriger les erreurs ci-dessous.")
+    else:
+        form = ProductForm(instance=product)
+    return render(request, 'core/manager/product_form.html', {
+        'form': form,
+        'product': product,
+        'action': 'update'
+    })
+
+
+def product_delete(request, pk):
+    product = get_object_or_404(Product, pk=pk)
+    if request.method == 'POST':
+        name = product.name
+        product.delete()
+        messages.success(request, f"Produit '{name}' supprimé avec succès.")
+        return redirect(reverse('core:product_manage_list'))
+    return render(request, 'core/manager/product_confirm_delete.html', {'product': product})
+
+
+def product_image_delete(request, image_id):
+    image = get_object_or_404(ProductImage, pk=image_id)
+    product_id = image.product.pk
+    image.delete()
+    messages.success(request, "Image supprimée.")
+    return redirect(reverse('core:product_update', args=[product_id]))
+

@@ -1,0 +1,108 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Détail Commande #{{ order.pk }} — SKANDS{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto py-6">
+  <!-- Retour -->
+  <div class="mb-6">
+    <a href="{% url 'core:manager_dashboard' %}" class="inline-flex items-center text-sm font-semibold text-gray-500 hover:text-gray-900 transition">
+      <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+      </svg>
+      Retour aux commandes
+    </a>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Détails de la commande (2/3) -->
+    <div class="lg:col-span-2 space-y-6">
+      <!-- Infos Client -->
+      <div class="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
+        <h2 class="text-lg font-bold text-gray-900 mb-4">Informations Client</h2>
+        <dl class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <dt class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Nom complet</dt>
+            <dd class="text-sm font-bold text-gray-900 mt-0.5">{{ order.full_name }}</dd>
+          </div>
+          <div>
+            <dt class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Téléphone</dt>
+            <dd class="text-sm font-bold text-gray-900 mt-0.5">{{ order.phone_number }}</dd>
+          </div>
+          <div class="sm:col-span-2">
+            <dt class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Adresse de livraison</dt>
+            <dd class="text-sm text-gray-900 mt-0.5">
+              {{ order.address }}<br>
+              <span class="font-semibold text-gray-800">{{ order.get_city_display }}</span>
+            </dd>
+          </div>
+        </dl>
+      </div>
+
+      <!-- Articles commandés -->
+      <div class="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
+        <h2 class="text-lg font-bold text-gray-900 mb-4">Articles Commandés ({{ order.items.count }})</h2>
+        <div class="divide-y divide-gray-100">
+          {% for item in order.items.all %}
+            <div class="py-4 flex items-center justify-between {% if forloop.first %}pt-0{% endif %} {% if forloop.last %}pb-0{% endif %}">
+              <div class="flex items-center gap-4">
+                <div class="w-12 h-12 bg-gray-50 border rounded-lg overflow-hidden flex-shrink-0">
+                  {% if item.product.images.all %}
+                    <img src="{{ item.product.images.all.0.image.url }}" alt="{{ item.product.name }}" class="w-full h-full object-cover">
+                  {% else %}
+                    <svg class="w-full h-full text-gray-300 p-2" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                    </svg>
+                  {% endif %}
+                </div>
+                <div>
+                  <h3 class="text-sm font-semibold text-gray-900">{{ item.product.name }}</h3>
+                  <p class="text-xs text-gray-400 mt-0.5">
+                    {% if item.selected_size %}Taille: {{ item.selected_size }} | {% endif %}
+                    {% if item.selected_color %}Couleur: {{ item.selected_color }}{% endif %}
+                  </p>
+                </div>
+              </div>
+              <div class="text-right">
+                <span class="text-sm text-gray-500">{{ item.quantity }} x</span>
+                <span class="text-sm font-bold text-gray-900 ml-1">{{ item.price }} TND</span>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+        <div class="border-t border-gray-100 pt-4 mt-4 flex items-center justify-between">
+          <span class="text-base font-extrabold text-gray-900">Montant total</span>
+          <span class="text-lg font-black text-red-600">{{ order.total_amount }} TND</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mise à jour du Statut (1/3) -->
+    <div class="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm h-fit">
+      <h2 class="text-lg font-bold text-gray-900 mb-4">Statut Commande</h2>
+      
+      <form method="post" class="space-y-4">
+        {% csrf_token %}
+        
+        <div>
+          <label for="{{ form.status.id_for_label }}" class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Modifier le statut</label>
+          <select name="status" id="{{ form.status.id_for_label }}" class="block w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition">
+            {% for value, text in form.status.field.choices %}
+              <option value="{{ value }}" {% if form.status.value == value %}selected{% endif %}>{{ text }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <button type="submit" class="w-full inline-flex items-center justify-center px-4 py-2.5 border border-transparent rounded-lg shadow-sm text-sm font-semibold text-white bg-red-600 hover:bg-red-700 focus:outline-none transition">
+          Enregistrer
+        </button>
+      </form>
+
+      <div class="border-t border-gray-100 pt-4 mt-6 text-xs text-gray-400 space-y-2">
+        <p>Créée le {{ order.created_at|date:"d/m/Y à H:i" }}</p>
+        <p>UUID : {{ order.id_unique }}</p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

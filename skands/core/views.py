@@ -44,6 +44,59 @@ def home(request):
     )
 
 
+def home_v2(request):
+    """Render the V2 homepage with massive category hero banners."""
+    products = Product.objects.filter(is_active=True)[:8]
+    featured = products[:4]
+    print(f"DEBUG: Retrieved {products.count()} active products for homepage V2 view.")
+    categories = [
+        {
+            'name': 'Robes',
+            'subtitle': 'Élégance fluide pour toutes vos occasions',
+            'image': 'core/images/robes_banner.png',
+            'url': '/products/?q=robe'
+        },
+        {
+            'name': 'Tops',
+            'subtitle': 'Des hauts modernes et essentiels du quotidien',
+            'image': 'core/images/tops_banner.png',
+            'url': '/products/?q=top'
+        },
+        {
+            'name': 'Bas',
+            'subtitle': 'Coupes parfaites et matières nobles',
+            'image': 'core/images/bas_banner.png',
+            'url': '/products/?q=bas'
+        },
+        {
+            'name': 'Sacs',
+            'subtitle': 'L’accessoire signature de votre garde-robe',
+            'image': 'core/images/sacs_banner.png',
+            'url': '/products/?q=sac'
+        },
+        {
+            'name': 'Chaussures',
+            'subtitle': 'Faites sensation à chaque pas',
+            'image': 'core/images/chaussures_banner.png',
+            'url': '/products/?q=chaussure'
+        },
+    ]
+    hero_mobile_slides = [
+        {'image': 'core/images/hero-mobile/1.jpg', 'alt': 'Nouvelle collection — Robes'},
+        {'image': 'core/images/hero-mobile/2.jpg', 'alt': 'Sacs & accessoires tendance'}
+    ]
+    return render(
+        request,
+        'core/home_v2.html',
+        {
+            'products': products,
+            'featured': featured,
+            'categories': categories,
+            'hero_mobile_slides': hero_mobile_slides,
+        },
+    )
+
+
 def product_detail(request, pk):
     product = get_object_or_404(Product, pk=pk, is_active=True)
     return render(request, 'core/product_detail.html', {'product': product})

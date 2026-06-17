@@ -1,4 +1,5 @@
 from django import forms
+# pyrefly: ignore [missing-import]
 from .models import Order, GOVERNORATES, Product
 
 
@@ -22,8 +23,28 @@ class MultipleFileInput(forms.FileInput):
     allow_multiple_selected = True
 
 
+class MultipleImageField(forms.ImageField):
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault("widget", MultipleFileInput())
+        super().__init__(*args, **kwargs)
+
+    def clean(self, data, initial=None):
+        single_file_clean = super().clean
+        if isinstance(data, (list, tuple)):
+            result = []
+            for d in data:
+                if d and getattr(d, 'name', '') == '' and getattr(d, 'size', 0) == 0:
+                    continue
+                result.append(single_file_clean(d, initial))
+            return result
+        else:
+            if data and getattr(data, 'name', '') == '' and getattr(data, 'size', 0) == 0:
+                return None
+            return single_file_clean(data, initial)
+
+
 class ProductForm(forms.ModelForm):
-    images = forms.ImageField(
+    images = MultipleImageField(
         widget=MultipleFileInput(attrs={'multiple': True, 'class': 'hidden', 'id': 'image-upload-input'}),
         required=False,
         label="Ajouter des images"

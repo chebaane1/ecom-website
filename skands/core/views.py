@@ -153,6 +153,7 @@ def product_create(request):
             messages.success(request, f"Produit '{product.name}' créé avec succès.")
             return redirect(reverse('core:product_manage_list'))
         else:
+            print(form.errors)
             messages.error(request, "Veuillez corriger les erreurs ci-dessous.")
     else:
         form = ProductForm()
@@ -174,6 +175,7 @@ def product_update(request, pk):
             messages.success(request, f"Produit '{product.name}' mis à jour avec succès.")
             return redirect(reverse('core:product_manage_list'))
         else:
+            print(form.errors)
             messages.error(request, "Veuillez corriger les erreurs ci-dessous.")
     else:
         form = ProductForm(instance=product)

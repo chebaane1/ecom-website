@@ -167,22 +167,17 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 # settings.py
-
-# settings.py
-
 if os.environ.get('VERCEL') == '1':
-    # On désactive le mode strict par sécurité
-    WHITENOISE_MANIFEST_STRICT = False
-    
-    # --- MODIFICATION ICI : On utilise le stockage sans post-processing de manifeste lourd ---
-    STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
+    # On retire complètement le stockage "Compressed" de WhiteNoise
+    # On utilise le stockage natif et basique de Django pour le build
+    STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
     
     STORAGES = {
         "default": {
             "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
         },
         "staticfiles": {
-            "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
+            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
         },
     }
     

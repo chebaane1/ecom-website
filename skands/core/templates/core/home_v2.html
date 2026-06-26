@@ -168,15 +168,42 @@
 <section class="overflow-hidden">
   <!-- Carrousel mobile uniquement -->
   <div class="md:hidden relative h-96 sm:h-[28rem]" x-data="{
-      active: 0,
+      active: 1,
       total: {{ hero_mobile_slides|length }},
       touchStartX: 0,
       autoplay: null,
-      goTo(index) {
-        this.active = (index + this.total) % this.total;
+      transitionEnabled: true,
+      next() {
+        if (!this.transitionEnabled) return;
+        this.active++;
       },
-      next() { this.goTo(this.active + 1); },
-      prev() { this.goTo(this.active - 1); },
+      prev() {
+        if (!this.transitionEnabled) return;
+        this.active--;
+      },
+      goTo(index) {
+        this.active = index + 1;
+      },
+      currentIndicator() {
+        if (this.active === 0) return this.total - 1;
+        if (this.active === this.total + 1) return 0;
+        return this.active - 1;
+      },
+      handleTransitionEnd() {
+        if (this.active === this.total + 1) {
+          this.transitionEnabled = false;
+          this.active = 1;
+          this.$nextTick(() => {
+            setTimeout(() => { this.transitionEnabled = true; }, 50);
+          });
+        } else if (this.active === 0) {
+          this.transitionEnabled = false;
+          this.active = this.total;
+          this.$nextTick(() => {
+            setTimeout(() => { this.transitionEnabled = true; }, 50);
+          });
+        }
+      },
       startAutoplay() {
         clearInterval(this.autoplay);
         this.autoplay = setInterval(() => this.next(), 4500);
@@ -192,13 +219,31 @@
         this.startAutoplay();
       }
     }" x-init="startAutoplay()" @touchstart="onTouchStart($event)" @touchend="onTouchEnd($event)">
-    <div class="flex h-full transition-transform duration-500 ease-out"
-      :style="'transform: translateX(-' + (active * 100) + '%)'">
+    <div class="flex h-full"
+      :class="transitionEnabled ? 'transition-transform duration-500 ease-out' : ''"
+      :style="'transform: translateX(-' + (active * 100) + '%)'"
+      @transitionend.self="handleTransitionEnd()">
+      
+      <!-- Clone of the last slide -->
+      {% with hero_mobile_slides|last as last_slide %}
+      <div class="w-full flex-shrink-0 h-full">
+        <img src="{% static last_slide.image %}" alt="{{ last_slide.alt }}" class="w-full h-full object-cover" draggable="false">
+      </div>
+      {% endwith %}
+
+      <!-- Real slides -->
       {% for slide in hero_mobile_slides %}
       <div class="w-full flex-shrink-0 h-full">
         <img src="{% static slide.image %}" alt="{{ slide.alt }}" class="w-full h-full object-cover" draggable="false">
       </div>
       {% endfor %}
+
+      <!-- Clone of the first slide -->
+      {% with hero_mobile_slides|first as first_slide %}
+      <div class="w-full flex-shrink-0 h-full">
+        <img src="{% static first_slide.image %}" alt="{{ first_slide.alt }}" class="w-full h-full object-cover" draggable="false">
+      </div>
+      {% endwith %}
     </div>
 
     <div
@@ -213,7 +258,7 @@
       {% for slide in hero_mobile_slides %}
       <button type="button" @click="goTo({{ forloop.counter0 }}); startAutoplay()"
         class="pointer-events-auto w-2.5 h-2.5 rounded-full transition-colors focus:outline-none"
-        :class="active === {{ forloop.counter0 }} ? 'bg-white shadow' : 'bg-white/50'"
+        :class="currentIndicator() === {{ forloop.counter0 }} ? 'bg-white shadow' : 'bg-white/50'"
         aria-label="{{ slide.alt }}"></button>
       {% endfor %}
     </div>

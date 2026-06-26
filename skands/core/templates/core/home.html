@@ -7,9 +7,7 @@
 <!-- Hero pleine largeur, collé au header -->
 <section class="overflow-hidden">
   <!-- Carrousel mobile uniquement -->
-  <div
-    class="md:hidden relative h-96 sm:h-[28rem]"
-    x-data="{
+  <div class="md:hidden relative h-96 sm:h-[28rem]" x-data="{
       active: 0,
       total: {{ hero_mobile_slides|length }},
       touchStartX: 0,
@@ -33,61 +31,41 @@
         else if (delta > 40) this.prev();
         this.startAutoplay();
       }
-    }"
-    x-init="startAutoplay()"
-    @touchstart="onTouchStart($event)"
-    @touchend="onTouchEnd($event)"
-  >
-    <div
-      class="flex h-full transition-transform duration-500 ease-out"
-      :style="'transform: translateX(-' + (active * 100) + '%)'"
-    >
+    }" x-init="startAutoplay()" @touchstart="onTouchStart($event)" @touchend="onTouchEnd($event)">
+    <div class="flex h-full transition-transform duration-500 ease-out"
+      :style="'transform: translateX(-' + (active * 100) + '%)'">
       {% for slide in hero_mobile_slides %}
-        <div class="w-full flex-shrink-0 h-full">
-          <img
-            src="{% static slide.image %}"
-            alt="{{ slide.alt }}"
-            class="w-full h-full object-cover"
-            draggable="false"
-          >
-        </div>
+      <div class="w-full flex-shrink-0 h-full">
+        <img src="{% static slide.image %}" alt="{{ slide.alt }}" class="w-full h-full object-cover" draggable="false">
+      </div>
       {% endfor %}
     </div>
 
-    <div class="absolute inset-x-0 bottom-0 flex flex-col items-center pb-14 pt-24 bg-gradient-to-t from-black/60 via-black/20 to-transparent pointer-events-none">
-      <a
-        href="{% url 'core:product_list' %}"
-        class="pointer-events-auto inline-flex items-center justify-center min-h-[44px] px-8 py-3 rounded-full bg-white text-gray-900 text-sm font-semibold tracking-wide shadow-lg hover:bg-gray-100 active:scale-95 transition transform focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-transparent"
-      >
+    <div
+      class="absolute inset-x-0 bottom-0 flex flex-col items-center pb-14 pt-24 bg-gradient-to-t from-black/60 via-black/20 to-transparent pointer-events-none">
+      <a href="{% url 'core:product_list' %}"
+        class="pointer-events-auto inline-flex items-center justify-center min-h-[44px] px-8 py-3 rounded-full bg-white text-gray-900 text-sm font-semibold tracking-wide shadow-lg hover:bg-gray-100 active:scale-95 transition transform focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-transparent">
         Découvrir la collection
       </a>
     </div>
 
     <div class="absolute bottom-3 left-0 right-0 flex justify-center gap-2 pointer-events-none">
       {% for slide in hero_mobile_slides %}
-        <button
-          type="button"
-          @click="goTo({{ forloop.counter0 }}); startAutoplay()"
-          class="pointer-events-auto w-2.5 h-2.5 rounded-full transition-colors focus:outline-none"
-          :class="active === {{ forloop.counter0 }} ? 'bg-white shadow' : 'bg-white/50'"
-          aria-label="{{ slide.alt }}"
-        ></button>
+      <button type="button" @click="goTo({{ forloop.counter0 }}); startAutoplay()"
+        class="pointer-events-auto w-2.5 h-2.5 rounded-full transition-colors focus:outline-none"
+        :class="active === {{ forloop.counter0 }} ? 'bg-white shadow' : 'bg-white/50'"
+        aria-label="{{ slide.alt }}"></button>
       {% endfor %}
     </div>
   </div>
 
   <!-- Image fixe desktop -->
   <div class="hidden md:block relative">
-    <img
-      src="{% static 'core/images/hero.jpg' %}"
-      alt="Skands - Chaussures & Sacs pour femmes"
-      class="w-full h-auto block"
-    >
+    <img src="{% static 'core/images/hero.jpg' %}" alt="Skands - Chaussures & Sacs pour femmes"
+      class="w-full h-auto block">
     <div class="absolute inset-0 flex items-center justify-center bg-black/20">
-      <a
-        href="{% url 'core:product_list' %}"
-        class="inline-flex items-center justify-center min-h-[48px] px-10 py-3.5 rounded-full bg-white text-gray-900 text-base font-semibold tracking-wide shadow-xl hover:bg-gray-100 hover:shadow-2xl active:scale-95 transition transform focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2"
-      >
+      <a href="{% url 'core:product_list' %}"
+        class="inline-flex items-center justify-center min-h-[48px] px-10 py-3.5 rounded-full bg-white text-gray-900 text-base font-semibold tracking-wide shadow-xl hover:bg-gray-100 hover:shadow-2xl active:scale-95 transition transform focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2">
         Découvrir la collection
       </a>
     </div>
@@ -104,84 +82,23 @@
   <div class="bg-white rounded-lg shadow p-6 overflow-x-auto">
     <div class="mx-auto flex w-max items-start justify-center gap-8 px-4">
       {% for category in categories %}
-        <div class="flex flex-col items-center text-center w-24 flex-none">
-          <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-2 overflow-hidden">
-            <img src="{% static category.icon %}" alt="{{ category.name }}" class="w-10 h-10 object-contain block mx-auto">
-          </div>
-          <div class="text-sm text-gray-700">{{ category.name }}</div>
+      <div class="flex flex-col items-center text-center w-24 flex-none">
+        <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-2 overflow-hidden">
+          <img src="{% static category.icon %}" alt="{{ category.name }}"
+            class="w-10 h-10 object-contain block mx-auto">
         </div>
+        <div class="text-sm text-gray-700">{{ category.name }}</div>
+      </div>
       {% endfor %}
       <!-- all Categories -->
-        <div class="flex flex-col items-center text-center w-24 flex-none">
-            <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-2 overflow-hidden">
-            <img src="{% static 'core/images/svgs/all.svg' %}" alt="Toutes les catégories" class="w-10 h-10 object-contain block mx-auto">
-            </div>
-            <div class="text-sm text-gray-700">Tout Voir</div>
+      <div class="flex flex-col items-center text-center w-24 flex-none">
+        <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-2 overflow-hidden">
+          <img src="{% static 'core/images/svgs/all.svg' %}" alt="Toutes les catégories"
+            class="w-10 h-10 object-contain block mx-auto">
         </div>
-    </div>
-  </div>
-</section>
-
-<!-- Flash Sale / Featured Carousel -->
-<section class="mb-8 relative" 
-         x-data="{ 
-            scrollNext() { this.$refs.carousel.scrollBy({ left: 300, behavior: 'smooth' }) },
-            scrollPrev() { this.$refs.carousel.scrollBy({ left: -300, behavior: 'smooth' }) }
-         }">
-  
-  <div class="flex items-center justify-between mb-4">
-    <h3 class="text-xl font-semibold">Vente flash</h3>
-  
-    <!-- Boutons de navigation (visibles si des produits existent) -->
-    {% if featured %}
-    <div class="hidden md:flex items-center gap-2">
-      <button @click="scrollPrev()" class="w-9 h-9 rounded-full bg-white border border-gray-200 flex items-center justify-center shadow-sm hover:bg-gray-50 active:scale-95 transition" aria-label="Précédent">
-        <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
-      </button>
-      <button @click="scrollNext()" class="w-9 h-9 rounded-full bg-white border border-gray-200 flex items-center justify-center shadow-sm hover:bg-gray-50 active:scale-95 transition" aria-label="Suivant">
-        <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-      </button>
-    </div>
-    {% endif %}
-  </div>
-
-  <!-- Conteneur du Carrousel -->
-  <div 
-    x-ref="carousel"
-    class="flex gap-4 overflow-x-auto scrollbar-none snap-x snap-mandatory scroll-smooth pb-4"
-    style="scrollbar-width: none; -ms-overflow-style: none;"
-  >
-    {% for p in featured %}
-      <div class="w-[75%] sm:w-[45%] md:w-[30%] lg:w-[23%] flex-shrink-0 snap-start">
-        <a href="{% url 'core:product_detail' p.pk %}" class="block bg-white rounded-xl shadow hover:shadow-md transition overflow-hidden border border-gray-200 h-full flex flex-col justify-between">
-          <div class="relative bg-gray-100">
-            {% with p.images.all|first as first_img %}
-              {% if first_img %}
-                <img src="{{ first_img.image.url }}" alt="{{ p.name }}" class="w-full h-48 object-cover" draggable="false">
-              {% else %}
-                <img src="{% static 'core/images/product-placeholder.svg' %}" alt="{{ p.name }}" class="w-full h-48 object-cover" draggable="false">
-              {% endif %}
-            {% endwith %}
-            <button type="button" class="absolute top-2 right-2 w-8 h-8 rounded-full bg-white text-gray-500 text-sm flex items-center justify-center shadow" aria-label="Ajouter aux favoris">♡</button>
-          </div>
-          <div class="p-3">
-            <h4 class="font-semibold text-gray-800 leading-tight h-12 overflow-hidden">{{ p.name }}</h4>
-            <!-- Conteneur en colonne avec une hauteur fixe de h-12 pour garantir que toutes les cartes gardent la même taille -->
-              <div class="mt-2 flex flex-col justify-end h-12">
-                {% if p.old_price %}
-                  <span class="text-xs text-pink-400 line-through leading-none mb-0.5">{{ p.old_price }} TND</span>
-                {% else %}
-                  <!-- Espacement invisible pour les produits sans réduction afin de maintenir l'alignement parfait -->
-                  <span class="text-xs opacity-0 pointer-events-none leading-none mb-0.5">0 TND</span>
-                {% endif %}
-                <span class="text-2xl font-extrabold text-gray-900 leading-none">{{ p.price }} TND</span>
-              </div>
-          </div>
-        </a>
+        <div class="text-sm text-gray-700">Tout Voir</div>
       </div>
-    {% empty %}
-      <div class="text-gray-500 py-4">Aucun produit mis en avant.</div>
-    {% endfor %}
+    </div>
   </div>
 </section>
 
@@ -190,27 +107,31 @@
   <h3 class="text-xl font-semibold mb-4">Aujourd'hui pour vous</h3>
   <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
     {% for product in products %}
-      <a href="{% url 'core:product_detail' product.pk %}" class="block bg-white rounded-xl shadow hover:shadow-md transition overflow-hidden border border-gray-200">
-        <div class="relative bg-gray-100">
-          {% with product.images.all|first as first_img %}
-              {% if first_img %}
-                <img src="{{ first_img.image.url }}" alt="{{ product.name }}" class="w-full h-52 object-cover">
-              {% else %}
-                <img src="{% static 'core/images/product-placeholder.svg' %}" alt="{{ product.name }}" class="w-full h-52 object-cover">
-              {% endif %}
-          {% endwith %}
-          <button type="button" class="absolute top-2 right-2 w-8 h-8 rounded-full bg-white text-gray-500 text-sm flex items-center justify-center shadow" aria-label="Ajouter aux favoris">♡</button>
+    <a href="{% url 'core:product_detail' product.pk %}"
+      class="block bg-white rounded-xl shadow hover:shadow-md transition overflow-hidden border border-gray-200">
+      <div class="relative bg-gray-100">
+        {% with product.images.all|first as first_img %}
+        {% if first_img %}
+        <img src="{{ first_img.image.url }}" alt="{{ product.name }}" class="w-full h-52 object-cover">
+        {% else %}
+        <img src="{% static 'core/images/product-placeholder.svg' %}" alt="{{ product.name }}"
+          class="w-full h-52 object-cover">
+        {% endif %}
+        {% endwith %}
+        <button type="button"
+          class="absolute top-2 right-2 w-8 h-8 rounded-full bg-white text-gray-500 text-sm flex items-center justify-center shadow"
+          aria-label="Ajouter aux favoris">♡</button>
+      </div>
+      <div class="p-3">
+        <h4 class="font-semibold text-gray-800 leading-tight h-12 overflow-hidden">{{ product.name }}</h4>
+        <div class="mt-2 flex items-baseline gap-2">
+          <span class="text-2xl font-extrabold text-gray-900">{{ product.price }} TND</span>
+          {% if product.old_price %}
+          <span class="text-sm text-pink-400 line-through">{{ product.old_price }} TND</span>
+          {% endif %}
         </div>
-        <div class="p-3">
-          <h4 class="font-semibold text-gray-800 leading-tight h-12 overflow-hidden">{{ product.name }}</h4>
-          <div class="mt-2 flex items-baseline gap-2">
-            <span class="text-2xl font-extrabold text-gray-900">{{ product.price }} TND</span>
-            {% if product.old_price %}
-              <span class="text-sm text-pink-400 line-through">{{ product.old_price }} TND</span>
-            {% endif %}
-          </div>
-        </div>
-      </a>
+      </div>
+    </a>
     {% endfor %}
   </div>
 </section>

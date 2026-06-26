@@ -3,7 +3,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.db.models import Sum
+from django.db.models import Sum, Q
 
 from .models import Product, Order, OrderItem, ProductImage
 from .cart import Cart
@@ -11,9 +11,121 @@ from .forms import CheckoutForm, OrderStatusForm, ProductForm
 
 
 def product_list(request):
+    query = request.GET.get('q', '').strip()
+    sort_by = request.GET.get('sort_by', '').strip()
+    
     products = Product.objects.filter(is_active=True)
-    print(f"DEBUG: Retrieved {products.count()} active products for product list view.")
-    return render(request, 'core/product_list.html', {'products': products})
+    
+    if query:
+        products = products.filter(
+            Q(name__icontains=query) |
+            Q(description__icontains=query) |
+            Q(category__name__icontains=query)
+        )
+        
+    if sort_by == 'price_asc':
+        products = products.order_by('price')
+    elif sort_by == 'price_desc':
+        products = products.order_by('-price')
+    elif sort_by == 'newest':
+        products = products.order_by('-created_at')
+        
+    colors_list = [
+        ('Bleus', 'bg-blue-600'),
+        ('Bleu ciel', 'bg-blue-300'),
+        ('Beige', 'bg-yellow-100'),
+        ('Blancs', 'bg-white'),
+        ('Écrus', 'bg-yellow-50'),
+        ('Denim', 'bg-blue-800'),
+        ('Denim clair', 'bg-blue-400'),
+        ('Denim moyen', 'bg-blue-600'),
+        ('Denim foncé', 'bg-blue-900'),
+        ('Dorés', 'bg-yellow-400'),
+        ('Gris', 'bg-gray-400'),
+        ('Kaki', 'bg-green-800'),
+        ('Marrons', 'bg-yellow-800'),
+        ('Prunes', 'bg-purple-800'),
+        ('Noirs', 'bg-black'),
+        ('Pierre', 'bg-gray-300'),
+        ('Roses', 'bg-pink-400'),
+        ('Tabac', 'bg-yellow-900'),
+        ('Turquoise', 'bg-teal-400'),
+        ('Verts', 'bg-green-600'),
+    ]
+
+    sizes_vetements = ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL', '32', '34', '40', '42', '44']
+    sizes_chaussures = ['35', '36', '37', '38', '39', '40', '41']
+    product_types = ['Sac à bandoulière', 'Chemisiers', 'Jupe', 'Pantalon', 'Jupe-short']
+
+    print(f"DEBUG: Retrieved {products.count()} active products for product list view (q='{query}', sort_by='{sort_by}').")
+    return render(request, 'core/product_list.html', {
+        'products': products,
+        'q': query,
+        'sort_by': sort_by,
+        'colors_list': colors_list,
+        'sizes_vetements': sizes_vetements,
+        'sizes_chaussures': sizes_chaussures,
+        'product_types': product_types,
+    })
+
+
+def product_list_v2(request):
+    query = request.GET.get('q', '').strip()
+    sort_by = request.GET.get('sort_by', '').strip()
+    
+    products = Product.objects.filter(is_active=True)
+    
+    if query:
+        products = products.filter(
+            Q(name__icontains=query) |
+            Q(description__icontains=query) |
+            Q(category__name__icontains=query)
+        )
+        
+    if sort_by == 'price_asc':
+        products = products.order_by('price')
+    elif sort_by == 'price_desc':
+        products = products.order_by('-price')
+    elif sort_by == 'newest':
+        products = products.order_by('-created_at')
+        
+    colors_list = [
+        ('Bleus', 'bg-blue-600'),
+        ('Bleu ciel', 'bg-blue-300'),
+        ('Beige', 'bg-yellow-100'),
+        ('Blancs', 'bg-white'),
+        ('Écrus', 'bg-yellow-50'),
+        ('Denim', 'bg-blue-800'),
+        ('Denim clair', 'bg-blue-400'),
+        ('Denim moyen', 'bg-blue-600'),
+        ('Denim foncé', 'bg-blue-900'),
+        ('Dorés', 'bg-yellow-400'),
+        ('Gris', 'bg-gray-400'),
+        ('Kaki', 'bg-green-800'),
+        ('Marrons', 'bg-yellow-800'),
+        ('Prunes', 'bg-purple-800'),
+        ('Noirs', 'bg-black'),
+        ('Pierre', 'bg-gray-300'),
+        ('Roses', 'bg-pink-400'),
+        ('Tabac', 'bg-yellow-900'),
+        ('Turquoise', 'bg-teal-400'),
+        ('Verts', 'bg-green-600'),
+    ]
+
+    sizes_vetements = ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL', '32', '34', '40', '42', '44']
+    sizes_chaussures = ['35', '36', '37', '38', '39', '40', '41']
+    product_types = ['Sac à bandoulière', 'Chemisiers', 'Jupe', 'Pantalon', 'Jupe-short']
+
+    print(f"DEBUG: Retrieved {products.count()} active products for V2 product list view (q='{query}', sort_by='{sort_by}').")
+    return render(request, 'core/product_list_v2.html', {
+        'products': products,
+        'q': query,
+        'sort_by': sort_by,
+        'colors_list': colors_list,
+        'sizes_vetements': sizes_vetements,
+        'sizes_chaussures': sizes_chaussures,
+        'product_types': product_types,
+    })
 
 
 def home(request):

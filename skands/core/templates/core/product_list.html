@@ -1,122 +1,362 @@
 {% extends 'core/base.html' %}
 {% load static %}
 
-{% block title %}Accueil — Boutique{% endblock %}
+{% block title %}Nos Produits — Boutique SKANDS{% endblock %}
 
 {% block content %}
-  <!-- Hero (mode) -->
-  <section class="relative bg-cover bg-center rounded-lg overflow-hidden mb-8" style="background-image: url('https://images.unsplash.com/photo-1520975919642-2b2f9f6b7b2b?auto=format&fit=crop&w=1600&q=80'); height:460px;">
-    <div class="absolute inset-0 bg-black bg-opacity-45"></div>
-    <div class="relative z-10 container mx-auto px-4 h-full flex items-center">
-      <div class="text-white max-w-2xl">
-        <h1 class="text-4xl md:text-5xl font-bold leading-tight mb-4">Collection Printemps — Boutique Tunisie</h1>
-        <p class="mb-6 text-lg">Pièces élégantes, matières responsables — découvrez nos nouveautés mode pour femmes et hommes.</p>
-        <a href="#featured" class="bg-white text-gray-900 px-5 py-3 rounded font-medium shadow hover:opacity-90">Acheter la collection</a>
+<div x-data="{ mobileFiltersOpen: false }">
+  <!-- En-tête de la page -->
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900">Nos Produits</h1>
+    <span class="hidden lg:inline text-sm text-gray-500 font-medium">{{ products.count }} produit{{ products.count|pluralize:"s" }}</span>
+  </div>
+
+  <!-- Barre de filtres et tri pour mobile uniquement -->
+  <div class="flex items-center justify-between lg:hidden mb-6 bg-white p-3.5 rounded-xl border border-gray-200 shadow-sm">
+    <button @click="mobileFiltersOpen = true" class="flex items-center gap-2 text-sm font-semibold text-gray-700 hover:text-black transition focus:outline-none">
+      <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/>
+      </svg>
+      Filtres & Tri
+    </button>
+    <span class="text-sm text-gray-500 font-medium">{{ products.count }} produit{{ products.count|pluralize:"s" }}</span>
+  </div>
+
+  <!-- Indication du terme de recherche actif -->
+  {% if q %}
+    <div class="mb-6 flex items-center gap-2 text-sm text-gray-700 bg-white px-4 py-2.5 rounded-lg border border-gray-200 shadow-sm w-fit">
+      <span>Recherche : <strong>"{{ q }}"</strong></span>
+      <a href="?{% if sort_by %}sort_by={{ sort_by }}{% endif %}" class="text-red-600 hover:text-red-800 ml-2 font-semibold" aria-label="Supprimer la recherche">
+        &times; Effacer la recherche
+      </a>
+    </div>
+  {% endif %}
+
+  <!-- Layout Principal : Grille 2 Colonnes -->
+  <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+    
+    <!-- ==================== DESKTOP SIDEBAR ==================== -->
+    <aside class="hidden lg:block lg:col-span-1">
+      <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm sticky top-24 h-[calc(100vh-140px)] overflow-y-auto">
+        <h2 class="text-lg font-bold text-gray-900 border-b pb-3 mb-5">Filtres de recherche</h2>
+        
+        <div class="space-y-6">
+          
+          <!-- Section: Trier par -->
+          <div x-data="{ open: true }" class="border-b border-gray-100 pb-5">
+            <button @click="open = !open" class="flex items-center justify-between w-full text-left font-semibold text-gray-800 hover:text-black focus:outline-none">
+              <span>Trier par</span>
+              <svg class="w-4 h-4 transform transition-transform duration-200" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+              </svg>
+            </button>
+            <div x-show="open" class="mt-3 space-y-2 text-sm">
+              <a href="?sort_by=newest{% if q %}&q={{ q }}{% endif %}" class="flex items-center justify-between py-1 px-2 rounded hover:bg-gray-50 transition {% if sort_by == 'newest' %}text-red-600 font-bold bg-red-50/50{% else %}text-gray-600{% endif %}">
+                <span>Nouveautés</span>
+              </a>
+              <a href="?sort_by=price_asc{% if q %}&q={{ q }}{% endif %}" class="flex items-center justify-between py-1 px-2 rounded hover:bg-gray-50 transition {% if sort_by == 'price_asc' %}text-red-600 font-bold bg-red-50/50{% else %}text-gray-600{% endif %}">
+                <span>Prix ascendant</span>
+              </a>
+              <a href="?sort_by=price_desc{% if q %}&q={{ q }}{% endif %}" class="flex items-center justify-between py-1 px-2 rounded hover:bg-gray-50 transition {% if sort_by == 'price_desc' %}text-red-600 font-bold bg-red-50/50{% else %}text-gray-600{% endif %}">
+                <span>Prix descendant</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- Section: Couleurs -->
+          <div x-data="{ open: true }" class="border-b border-gray-100 pb-5">
+            <button @click="open = !open" class="flex items-center justify-between w-full text-left font-semibold text-gray-800 hover:text-black focus:outline-none">
+              <span>Couleurs</span>
+              <svg class="w-4 h-4 transform transition-transform duration-200" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+              </svg>
+            </button>
+            <div x-show="open" class="mt-3 max-h-48 overflow-y-auto pr-1 space-y-2 text-sm text-gray-600">
+              {% for color, bg in colors_list %}
+                <label class="flex items-center justify-between cursor-pointer hover:text-black transition">
+                  <span class="flex items-center gap-2">
+                    <input type="checkbox" class="rounded border-gray-300 text-gray-900 focus:ring-gray-900">
+                    <span class="w-3.5 h-3.5 rounded-full {{ bg }} border border-gray-300/50"></span>
+                    <span>{{ color }}</span>
+                  </span>
+                </label>
+              {% endfor %}
+            </div>
+          </div>
+
+          <!-- Section: Tailles -->
+          <div x-data="{ open: true }" class="border-b border-gray-100 pb-5">
+            <button @click="open = !open" class="flex items-center justify-between w-full text-left font-semibold text-gray-800 hover:text-black focus:outline-none">
+              <span>Tailles</span>
+              <svg class="w-4 h-4 transform transition-transform duration-200" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+              </svg>
+            </button>
+            <div x-show="open" class="mt-3 space-y-4 text-xs text-gray-700">
+              <div>
+                <p class="font-medium text-gray-500 mb-1.5">Vêtements</p>
+                <div class="grid grid-cols-4 gap-1">
+                  {% for t in sizes_vetements %}
+                    <button type="button" class="border border-gray-200 rounded py-1 text-center font-semibold hover:border-black hover:bg-gray-50 transition focus:outline-none">{{ t }}</button>
+                  {% endfor %}
+                </div>
+              </div>
+              <div>
+                <p class="font-medium text-gray-500 mb-1.5">Chaussures</p>
+                <div class="grid grid-cols-4 gap-1">
+                  {% for t in sizes_chaussures %}
+                    <button type="button" class="border border-gray-200 rounded py-1 text-center font-semibold hover:border-black hover:bg-gray-50 transition focus:outline-none">{{ t }}</button>
+                  {% endfor %}
+                </div>
+              </div>
+              <div>
+                <p class="font-medium text-gray-500 mb-1.5">Accessoires</p>
+                <div class="grid grid-cols-4 gap-1">
+                  <button type="button" class="border border-gray-200 rounded py-1 text-center font-semibold hover:border-black hover:bg-gray-50 transition focus:outline-none">M</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section: Prix -->
+          <div x-data="{ open: true }" class="border-b border-gray-100 pb-5">
+            <button @click="open = !open" class="flex items-center justify-between w-full text-left font-semibold text-gray-800 hover:text-black focus:outline-none">
+              <span>Prix</span>
+              <svg class="w-4 h-4 transform transition-transform duration-200" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+              </svg>
+            </button>
+            <div x-show="open" class="mt-3 space-y-3">
+              <div class="flex items-center justify-between gap-2">
+                <div class="w-1/2">
+                  <label class="text-[10px] uppercase font-bold text-gray-400">Minimum</label>
+                  <div class="relative mt-0.5">
+                    <input type="number" value="30" class="w-full border border-gray-300 rounded-lg py-1.5 pl-2 pr-8 text-sm focus:outline-none focus:border-gray-500" />
+                    <span class="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-gray-400 font-bold">TND</span>
+                  </div>
+                </div>
+                <div class="w-1/2">
+                  <label class="text-[10px] uppercase font-bold text-gray-400">Maximum</label>
+                  <div class="relative mt-0.5">
+                    <input type="number" value="279" class="w-full border border-gray-300 rounded-lg py-1.5 pl-2 pr-8 text-sm focus:outline-none focus:border-gray-500" />
+                    <span class="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-gray-400 font-bold">TND</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section: Type de produit -->
+          <div x-data="{ open: true }" class="pb-2">
+            <button @click="open = !open" class="flex items-center justify-between w-full text-left font-semibold text-gray-800 hover:text-black focus:outline-none">
+              <span>Type de produit</span>
+              <svg class="w-4 h-4 transform transition-transform duration-200" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+              </svg>
+            </button>
+            <div x-show="open" class="mt-3 space-y-2 text-sm text-gray-600">
+              {% for item in product_types %}
+                <label class="flex items-center gap-2 cursor-pointer hover:text-black transition">
+                  <input type="checkbox" class="rounded border-gray-300 text-gray-900 focus:ring-gray-900">
+                  <span>{{ item }}</span>
+                </label>
+              {% endfor %}
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </aside>
+
+    <!-- ==================== PRODUCT GRID COLUMN ==================== -->
+    <div class="lg:col-span-3">
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        {% for product in products %}
+          <a href="{% url 'core:product_detail' product.pk %}"
+            class="block bg-white rounded-xl shadow hover:shadow-md transition overflow-hidden border border-gray-200">
+            <div class="relative bg-gray-100">
+              {% with product.images.all|first as first_img %}
+                {% if first_img %}
+                  <img src="{{ first_img.image.url }}" alt="{{ product.name }}" class="w-full h-52 object-cover">
+                {% else %}
+                  <img src="{% static 'core/images/product-placeholder.svg' %}" alt="{{ product.name }}" class="w-full h-52 object-cover">
+                {% endif %}
+              {% endwith %}
+              <button type="button"
+                class="absolute top-2 right-2 w-8 h-8 rounded-full bg-white text-gray-500 text-sm flex items-center justify-center shadow"
+                aria-label="Ajouter aux favoris">♡</button>
+            </div>
+            <div class="p-3">
+              <h4 class="font-semibold text-gray-800 leading-tight h-12 overflow-hidden">{{ product.name }}</h4>
+              <div class="mt-2 flex items-baseline gap-2">
+                <span class="text-2xl font-extrabold text-gray-900">{{ product.price }} TND</span>
+                {% if product.old_price %}
+                  <span class="text-sm text-pink-400 line-through">{{ product.old_price }} TND</span>
+                {% endif %}
+              </div>
+            </div>
+          </a>
+        {% empty %}
+          <div class="col-span-full text-center py-16 bg-white rounded-xl shadow border border-gray-200">
+            <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <p class="text-lg text-gray-600 font-medium">Aucun produit ne correspond à votre recherche.</p>
+            {% if q or sort_by %}
+              <a href="{% url 'core:product_list' %}" class="mt-4 inline-block bg-gray-900 hover:bg-black text-white px-6 py-2.5 rounded-lg text-sm font-semibold shadow transition duration-200">
+                Voir tous les produits
+              </a>
+            {% endif %}
+          </div>
+        {% endfor %}
       </div>
     </div>
-  </section>
+  </div>
 
-  <!-- Featured products (Nouveautés) -->
-  <section id="featured" class="mb-12">
-    <h2 class="text-2xl font-bold mb-4">Nouveautés</h2>
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-      {% for product in products|slice:":3" %}
-        <div class="bg-white rounded overflow-hidden shadow-lg">
-          <a href="{% url 'core:product_detail' product.pk %}">
-            {% if product.images.all %}
-              <img src="{{ product.images.all.0.image.url }}" alt="{{ product.images.all.0.alt_text }}" class="w-full h-64 object-cover">
-            {% else %}
-              <img src="{% static 'core/images/product-placeholder.svg' %}" alt="Pas d'image" class="w-full h-64 object-cover">
-            {% endif %}
-          </a>
-          <div class="p-4">
-            <h3 class="text-lg font-semibold"><a href="{% url 'core:product_detail' product.pk %}">{{ product.name }}</a></h3>
-            <div class="text-sm text-gray-600 mt-2">{{ product.description|truncatechars:90 }}</div>
-            <div class="mt-4 flex items-center justify-between">
-              <div class="text-xl font-semibold">{{ product.price }} TND</div>
-              <form action="{% url 'core:cart_add' %}" method="post" class="flex items-center">
-                {% csrf_token %}
-                <input type="hidden" name="product_id" value="{{ product.pk }}">
-                <input type="hidden" name="quantity" value="1">
-                <button type="submit" class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">Ajouter</button>
-              </form>
+  <!-- ==================== MOBILE FILTERS DRAWER ==================== -->
+  <div x-show="mobileFiltersOpen" class="fixed inset-0 z-50 flex lg:hidden" role="dialog" aria-modal="true" x-cloak>
+    
+    <!-- Background overlay -->
+    <div x-show="mobileFiltersOpen" x-transition:enter="transition-opacity ease-linear duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition-opacity ease-linear duration-300" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 bg-black bg-opacity-40" @click="mobileFiltersOpen = false"></div>
+    
+    <!-- Drawer content -->
+    <div x-show="mobileFiltersOpen" x-transition:enter="transition ease-in-out duration-300 transform" x-transition:enter-start="translate-x-full" x-transition:enter-end="translate-x-0" x-transition:leave="transition ease-in-out duration-300 transform" x-transition:leave-start="translate-x-0" x-transition:leave-end="translate-x-full" class="relative ml-auto flex h-full w-full max-w-xs flex-col overflow-y-auto bg-white py-4 pb-12 px-6 shadow-xl">
+      <div class="flex items-center justify-between border-b pb-4 mb-4">
+        <h2 class="text-lg font-bold text-gray-900">Filtres & Tri</h2>
+        <button @click="mobileFiltersOpen = false" class="text-gray-500 hover:text-gray-700 focus:outline-none">
+          <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Content list for mobile drawer -->
+      <div class="space-y-6">
+        
+        <!-- Section: Trier par -->
+        <div x-data="{ open: true }" class="border-b border-gray-100 pb-5">
+          <button @click="open = !open" class="flex items-center justify-between w-full text-left font-semibold text-gray-800 hover:text-black focus:outline-none">
+            <span>Trier par</span>
+            <svg class="w-4 h-4 transform transition-transform" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+            </svg>
+          </button>
+          <div x-show="open" class="mt-3 space-y-2 text-sm">
+            <a href="?sort_by=newest{% if q %}&q={{ q }}{% endif %}" class="flex items-center justify-between py-1 px-2 rounded hover:bg-gray-50 transition {% if sort_by == 'newest' %}text-red-600 font-bold bg-red-50/50{% else %}text-gray-600{% endif %}">
+              <span>Nouveautés</span>
+            </a>
+            <a href="?sort_by=price_asc{% if q %}&q={{ q }}{% endif %}" class="flex items-center justify-between py-1 px-2 rounded hover:bg-gray-50 transition {% if sort_by == 'price_asc' %}text-red-600 font-bold bg-red-50/50{% else %}text-gray-600{% endif %}">
+              <span>Prix ascendant</span>
+            </a>
+            <a href="?sort_by=price_desc{% if q %}&q={{ q }}{% endif %}" class="flex items-center justify-between py-1 px-2 rounded hover:bg-gray-50 transition {% if sort_by == 'price_desc' %}text-red-600 font-bold bg-red-50/50{% else %}text-gray-600{% endif %}">
+              <span>Prix descendant</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Section: Couleurs -->
+        <div x-data="{ open: true }" class="border-b border-gray-100 pb-5">
+          <button @click="open = !open" class="flex items-center justify-between w-full text-left font-semibold text-gray-800 hover:text-black focus:outline-none">
+            <span>Couleurs</span>
+            <svg class="w-4 h-4 transform transition-transform" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+            </svg>
+          </button>
+          <div x-show="open" class="mt-3 max-h-48 overflow-y-auto pr-1 space-y-2 text-sm text-gray-600">
+            {% for color, bg in colors_list %}
+              <label class="flex items-center justify-between cursor-pointer hover:text-black transition">
+                <span class="flex items-center gap-2">
+                  <input type="checkbox" class="rounded border-gray-300 text-gray-900 focus:ring-gray-900">
+                  <span class="w-3.5 h-3.5 rounded-full {{ bg }} border border-gray-300/50"></span>
+                  <span>{{ color }}</span>
+                </span>
+              </label>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Section: Tailles -->
+        <div x-data="{ open: true }" class="border-b border-gray-100 pb-5">
+          <button @click="open = !open" class="flex items-center justify-between w-full text-left font-semibold text-gray-800 hover:text-black focus:outline-none">
+            <span>Tailles</span>
+            <svg class="w-4 h-4 transform transition-transform" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+            </svg>
+          </button>
+          <div x-show="open" class="mt-3 space-y-4 text-xs text-gray-700">
+            <div>
+              <p class="font-medium text-gray-500 mb-1.5">Vêtements</p>
+              <div class="grid grid-cols-4 gap-1">
+                {% for t in sizes_vetements %}
+                  <button type="button" class="border border-gray-200 rounded py-1 text-center font-semibold hover:border-black hover:bg-gray-50 transition focus:outline-none">{{ t }}</button>
+                {% endfor %}
+              </div>
+            </div>
+            <div>
+              <p class="font-medium text-gray-500 mb-1.5">Chaussures</p>
+              <div class="grid grid-cols-4 gap-1">
+                {% for t in sizes_chaussures %}
+                  <button type="button" class="border border-gray-200 rounded py-1 text-center font-semibold hover:border-black hover:bg-gray-50 transition focus:outline-none">{{ t }}</button>
+                {% endfor %}
+              </div>
+            </div>
+            <div>
+              <p class="font-medium text-gray-500 mb-1.5">Accessoires</p>
+              <div class="grid grid-cols-4 gap-1">
+                <button type="button" class="border border-gray-200 rounded py-1 text-center font-semibold hover:border-black hover:bg-gray-50 transition focus:outline-none">M</button>
+              </div>
             </div>
           </div>
         </div>
-      {% empty %}
-        <p>Aucun produit en vedette pour le moment.</p>
-      {% endfor %}
-    </div>
-  </section>
 
-  <!-- Categories (mode) -->
-  <section class="mb-12">
-    <h2 class="text-2xl font-bold mb-4">Collections</h2>
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
-      <a href="#" class="group block bg-white rounded overflow-hidden shadow hover:shadow-lg">
-        <div class="h-44 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1514996937319-344454492b37?auto=format&fit=crop&w=800&q=60');"></div>
-        <div class="p-4">
-          <h3 class="font-semibold">Femmes</h3>
-          <p class="text-sm text-gray-600">Robes, tops et accessoires.</p>
+        <!-- Section: Prix -->
+        <div x-data="{ open: true }" class="border-b border-gray-100 pb-5">
+          <button @click="open = !open" class="flex items-center justify-between w-full text-left font-semibold text-gray-800 hover:text-black focus:outline-none">
+            <span>Prix</span>
+            <svg class="w-4 h-4 transform transition-transform" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+            </svg>
+          </button>
+          <div x-show="open" class="mt-3 space-y-3">
+            <div class="flex items-center justify-between gap-2">
+              <div class="w-1/2">
+                <label class="text-[10px] uppercase font-bold text-gray-400">Minimum</label>
+                <div class="relative mt-0.5">
+                  <input type="number" value="30" class="w-full border border-gray-300 rounded-lg py-1.5 pl-2 pr-8 text-sm focus:outline-none focus:border-gray-500" />
+                  <span class="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-gray-400 font-bold">TND</span>
+                </div>
+              </div>
+              <div class="w-1/2">
+                <label class="text-[10px] uppercase font-bold text-gray-400">Maximum</label>
+                <div class="relative mt-0.5">
+                  <input type="number" value="279" class="w-full border border-gray-300 rounded-lg py-1.5 pl-2 pr-8 text-sm focus:outline-none focus:border-gray-500" />
+                  <span class="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-gray-400 font-bold">TND</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-      </a>
-      <a href="#" class="group block bg-white rounded overflow-hidden shadow hover:shadow-lg">
-        <div class="h-44 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1503341455253-b2e723bb3dbb?auto=format&fit=crop&w=800&q=60');"></div>
-        <div class="p-4">
-          <h3 class="font-semibold">Hommes</h3>
-          <p class="text-sm text-gray-600">Chemises, pantalons et pièces essentielles.</p>
-        </div>
-      </a>
-      <a href="#" class="group block bg-white rounded overflow-hidden shadow hover:shadow-lg">
-        <div class="h-44 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1491553895911-0055eca6402d?auto=format&fit=crop&w=800&q=60');"></div>
-        <div class="p-4">
-          <h3 class="font-semibold">Nouveautés</h3>
-          <p class="text-sm text-gray-600">Les dernières pièces ajoutées.</p>
-        </div>
-      </a>
-    </div>
-  </section>
 
-  <!-- Newsletter (VIP) -->
-  <section class="bg-white rounded p-6 mb-12 shadow">
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between">
-      <div>
-        <h3 class="text-xl font-semibold">Rejoignez notre liste VIP</h3>
-        <p class="text-sm text-gray-600">Avant-premières, ventes privées et codes promo exclusifs.</p>
+        <!-- Section: Type de produit -->
+        <div x-data="{ open: true }" class="pb-2">
+          <button @click="open = !open" class="flex items-center justify-between w-full text-left font-semibold text-gray-800 hover:text-black focus:outline-none">
+            <span>Type de produit</span>
+            <svg class="w-4 h-4 transform transition-transform" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+            </svg>
+          </button>
+          <div x-show="open" class="mt-3 space-y-2 text-sm text-gray-600">
+            {% for item in product_types %}
+              <label class="flex items-center gap-2 cursor-pointer hover:text-black transition">
+                <input type="checkbox" class="rounded border-gray-300 text-gray-900 focus:ring-gray-900">
+                <span>{{ item }}</span>
+              </label>
+            {% endfor %}
+          </div>
+        </div>
+
       </div>
-      <form action="#" method="post" class="mt-4 md:mt-0 flex">
-        <input type="email" name="email" placeholder="Votre adresse email" class="border rounded-l px-4 py-2 w-72" required>
-        <button type="submit" class="bg-gray-900 text-white px-4 py-2 rounded-r">Je m'inscris</button>
-      </form>
     </div>
-  </section>
-
-  <!-- Tous les produits -->
-  <h2 class="text-2xl font-bold mb-6">Tous les produits</h2>
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-    {% for product in products %}
-      <div class="bg-white p-4 rounded shadow">
-        <a href="{% url 'core:product_detail' product.pk %}">
-          {% if product.images.all %}
-            <img src="{{ product.images.all.0.image.url }}" alt="{{ product.images.all.0.alt_text }}" class="w-full h-56 object-cover mb-3 rounded">
-          {% else %}
-            <img src="{% static 'core/images/product-placeholder.svg' %}" alt="Pas d'image" class="w-full h-56 object-cover mb-3 rounded">
-          {% endif %}
-        </a>
-        <h2 class="text-lg font-medium"><a href="{% url 'core:product_detail' product.pk %}">{{ product.name }}</a></h2>
-        <p class="text-sm text-gray-600 mt-2">{{ product.description|truncatechars:120 }}</p>
-        <div class="mt-4 flex items-center justify-between">
-          <div class="text-xl font-semibold">{{ product.price }} TND</div>
-          <form action="{% url 'core:cart_add' %}" method="post" class="flex items-center">
-            {% csrf_token %}
-            <input type="hidden" name="product_id" value="{{ product.pk }}">
-            <input type="hidden" name="quantity" value="1">
-            <button type="submit" class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">Ajouter</button>
-          </form>
-        </div>
-      </div>
-    {% empty %}
-      <p>Aucun produit disponible pour le moment.</p>
-    {% endfor %}
   </div>
+</div>
 {% endblock %}

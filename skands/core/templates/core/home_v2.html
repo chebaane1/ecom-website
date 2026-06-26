@@ -3,6 +3,166 @@
 
 {% block title %}Accueil — Boutique Tunisie V2{% endblock %}
 
+{% block category_menu %}{% endblock %}
+
+{% block burger_menu %}
+<button @click="sidebarOpen = true"
+  class="text-gray-800 hover:text-black focus:outline-none p-1.5 rounded-lg hover:bg-gray-100 transition mr-2"
+  aria-label="Menu">
+  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+  </svg>
+</button>
+{% endblock %}
+
+{% block side_nav %}
+<!-- Side Nav Drawer Overlay -->
+<div x-show="sidebarOpen" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0"
+  x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-200"
+  x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
+  class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm" @click="sidebarOpen = false" style="display: none;">
+</div>
+
+<!-- Side Nav Drawer -->
+<div x-show="sidebarOpen" x-transition:enter="transition ease-out duration-300 transform"
+  x-transition:enter-start="-translate-x-full" x-transition:enter-end="translate-x-0"
+  x-transition:leave="transition ease-in duration-200 transform" x-transition:leave-start="translate-x-0"
+  x-transition:leave-end="-translate-x-full"
+  class="fixed inset-y-0 left-0 z-50 w-80 max-w-[85vw] bg-white shadow-2xl flex flex-col h-full" style="display: none;"
+  @keydown.escape.window="sidebarOpen = false">
+
+  <!-- Header of Side Nav -->
+  <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100">
+    <div class="flex items-center gap-2">
+      <img src="{% static 'core/images/logo.jpg' %}" alt="SKANDS" class="h-8 w-8 rounded-lg object-cover">
+      <span class="font-bold text-lg tracking-wider text-gray-900">SKANDS</span>
+    </div>
+    <button @click="sidebarOpen = false"
+      class="p-1 rounded-full text-gray-400 hover:bg-gray-100 hover:text-gray-900 transition focus:outline-none"
+      aria-label="Fermer le menu">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+  </div>
+
+  <!-- Content / Links of Side Nav -->
+  <nav class="flex-1 overflow-y-auto px-5 py-6 space-y-4">
+    <!-- Navigation Links -->
+    <div class="space-y-3">
+      <!-- Promotions -->
+      <a href="{% url 'core:product_list' %}"
+        class="flex items-center justify-between py-2 text-base font-semibold uppercase tracking-wider text-red-600 hover:text-red-700 transition border-b border-gray-50 pb-2">
+        <span>Promotions</span>
+        <span
+          class="bg-red-100 text-red-600 text-xxs px-2 py-0.5 rounded-full font-bold uppercase tracking-normal">Soldes</span>
+      </a>
+
+      <!-- Collection accordion -->
+      <div x-data="{ open: false }" class="border-b border-gray-50 pb-2">
+        <button @click="open = !open"
+          class="flex items-center justify-between w-full py-2 text-base font-semibold text-gray-900 hover:text-red-600 transition focus:outline-none">
+          <span>Collection</span>
+          <svg class="w-4 h-4 transform transition-transform duration-200" :class="open ? 'rotate-180' : ''" fill="none"
+            stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+        <div x-show="open" x-transition:enter="transition ease-out duration-200"
+          x-transition:enter-start="opacity-0 transform -translate-y-2"
+          x-transition:enter-end="opacity-100 transform translate-y-0" class="pl-4 mt-1.5 space-y-2"
+          style="display: none;">
+          <a href="{% url 'core:product_list' %}"
+            class="block py-1 text-sm font-medium text-gray-600 hover:text-red-600 transition">Robes</a>
+          <a href="{% url 'core:product_list' %}"
+            class="block py-1 text-sm font-medium text-gray-600 hover:text-red-600 transition">Tops</a>
+          <a href="{% url 'core:product_list' %}"
+            class="block py-1 text-sm font-medium text-gray-600 hover:text-red-600 transition">Bas</a>
+          <a href="{% url 'core:product_list' %}"
+            class="block py-1 text-sm font-medium text-gray-600 hover:text-red-600 transition">Nouveautés</a>
+        </div>
+      </div>
+
+      <!-- Costume & Cérémonie -->
+      <a href="{% url 'core:product_list' %}"
+        class="block py-2 text-base font-semibold uppercase tracking-wider text-gray-900 hover:text-red-600 transition border-b border-gray-50 pb-2">
+        Costume &amp; Cérémonie
+      </a>
+
+      <!-- Chaussures accordion -->
+      <div x-data="{ open: false }" class="border-b border-gray-50 pb-2">
+        <button @click="open = !open"
+          class="flex items-center justify-between w-full py-2 text-base font-semibold text-gray-900 hover:text-red-600 transition focus:outline-none">
+          <span>Chaussures</span>
+          <svg class="w-4 h-4 transform transition-transform duration-200" :class="open ? 'rotate-180' : ''" fill="none"
+            stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+        <div x-show="open" x-transition:enter="transition ease-out duration-200"
+          x-transition:enter-start="opacity-0 transform -translate-y-2"
+          x-transition:enter-end="opacity-100 transform translate-y-0" class="pl-4 mt-1.5 space-y-2"
+          style="display: none;">
+          <a href="{% url 'core:product_list' %}"
+            class="block py-1 text-sm font-medium text-gray-600 hover:text-red-600 transition">Baskets</a>
+          <a href="{% url 'core:product_list' %}"
+            class="block py-1 text-sm font-medium text-gray-600 hover:text-red-600 transition">Sandales</a>
+          <a href="{% url 'core:product_list' %}"
+            class="block py-1 text-sm font-medium text-gray-600 hover:text-red-600 transition">Talons</a>
+          <a href="{% url 'core:product_list' %}"
+            class="block py-1 text-sm font-medium text-gray-600 hover:text-red-600 transition">Bottes</a>
+        </div>
+      </div>
+
+      <!-- Sportswear -->
+      <a href="{% url 'core:product_list' %}"
+        class="block py-2 text-base font-semibold uppercase tracking-wider text-gray-900 hover:text-red-600 transition border-b border-gray-50 pb-2">
+        Sportswear
+      </a>
+
+      <!-- Accessoires accordion -->
+      <div x-data="{ open: false }" class="border-b border-gray-50 pb-2">
+        <button @click="open = !open"
+          class="flex items-center justify-between w-full py-2 text-base font-semibold text-gray-900 hover:text-red-600 transition focus:outline-none">
+          <span>Accessoires</span>
+          <svg class="w-4 h-4 transform transition-transform duration-200" :class="open ? 'rotate-180' : ''" fill="none"
+            stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+        <div x-show="open" x-transition:enter="transition ease-out duration-200"
+          x-transition:enter-start="opacity-0 transform -translate-y-2"
+          x-transition:enter-end="opacity-100 transform translate-y-0" class="pl-4 mt-1.5 space-y-2"
+          style="display: none;">
+          <a href="{% url 'core:product_list' %}"
+            class="block py-1 text-sm font-medium text-gray-600 hover:text-red-600 transition">Sacs</a>
+          <a href="{% url 'core:product_list' %}"
+            class="block py-1 text-sm font-medium text-gray-600 hover:text-red-600 transition">Bijoux</a>
+          <a href="{% url 'core:product_list' %}"
+            class="block py-1 text-sm font-medium text-gray-600 hover:text-red-600 transition">Ceintures</a>
+          <a href="{% url 'core:product_list' %}"
+            class="block py-1 text-sm font-medium text-gray-600 hover:text-red-600 transition">Foulards</a>
+        </div>
+      </div>
+
+      <!-- Soyez fidèle -->
+      <a href="#"
+        class="block py-2 text-base font-semibold uppercase tracking-wider text-gray-900 hover:text-red-600 transition">
+        Soyez fidèle
+      </a>
+    </div>
+  </nav>
+
+  <!-- Footer of Side Nav -->
+  <div class="p-5 border-t border-gray-100 bg-gray-50">
+    <a href="{% url 'core:manager_dashboard' %}"
+      class="block text-center text-xs font-semibold text-gray-500 hover:text-black uppercase tracking-widest py-2.5 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow transition">
+      Espace Manager
+    </a>
+  </div>
+</div>
+{% endblock %}
+
 {% block hero %}
 <!-- Hero pleine largeur, collé au header -->
 <section class="overflow-hidden">
@@ -73,8 +233,20 @@
 </section>
 {% endblock %}
 
-{% block main_class %}w-full pb-8{% endblock %}
-
+{% block main_class %}w-full{% endblock %}
+<style>
+  /* Cible uniquement les images de produits dans les listes */
+  .group img {
+    width: 100% !important;
+    max-width: 100%;
+    aspect-ratio: 3 / 4 !important;
+    /* Force le format portrait sur TOUS les blocs */
+    object-fit: cover !important;
+    /* Empêche la distorsion */
+    object-position: center !important;
+    /* Centre le sujet */
+  }
+</style>
 {% block content %}
 
 <!-- Categories as giant vertical hero banners -->
@@ -115,114 +287,63 @@
   {% endfor %}
 </section>
 
-<!-- Wrap existing sections in a container to match the grid styling -->
-<div class="container mx-auto px-4">
+<!-- Product Grid Section -->
+<section class="mb-16 w-full">
+  <div class="px-4 md:px-8 lg:px-12 mb-6">
+    <h3 class="text-2xl font-bold tracking-tight uppercase text-gray-900">Dernières nouveautés pour vous</h3>
+  </div>
 
-  <!-- Flash Sale / Featured Carousel -->
-  <section class="mb-12 relative" x-data="{ 
-              scrollNext() { this.$refs.carousel.scrollBy({ left: 300, behavior: 'smooth' }) },
-              scrollPrev() { this.$refs.carousel.scrollBy({ left: -300, behavior: 'smooth' }) }
-           }">
-
-    <div class="flex items-center justify-between mb-6">
-      <h3 class="text-2xl font-bold tracking-tight">Vente flash</h3>
-
-      <!-- Boutons de navigation (visibles si des produits existent) -->
-      {% if featured %}
-      <div class="hidden md:flex items-center gap-2">
-        <button @click="scrollPrev()"
-          class="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center shadow-sm hover:bg-gray-50 active:scale-95 transition"
-          aria-label="Précédent">
-          <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-          </svg>
-        </button>
-        <button @click="scrollNext()"
-          class="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center shadow-sm hover:bg-gray-50 active:scale-95 transition"
-          aria-label="Suivant">
-          <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-          </svg>
-        </button>
-      </div>
-      {% endif %}
-    </div>
-
-    <!-- Conteneur du Carrousel -->
-    <div x-ref="carousel" class="flex gap-4 overflow-x-auto scrollbar-none snap-x snap-mandatory scroll-smooth pb-4"
-      style="scrollbar-width: none; -ms-overflow-style: none;">
-      {% for p in featured %}
-      <div class="w-[75%] sm:w-[45%] md:w-[30%] lg:w-[23%] flex-shrink-0 snap-start">
-        <a href="{% url 'core:product_detail' p.pk %}"
-          class="block bg-white rounded-xl shadow hover:shadow-md transition overflow-hidden border border-gray-200 h-full flex flex-col justify-between">
-          <div class="relative bg-gray-100">
-            {% with p.images.all|first as first_img %}
-            {% if first_img %}
-            <img src="{{ first_img.image.url }}" alt="{{ p.name }}" class="w-full h-48 object-cover" draggable="false">
-            {% else %}
-            <img src="{% static 'core/images/product-placeholder.svg' %}" alt="{{ p.name }}"
-              class="w-full h-48 object-cover" draggable="false">
-            {% endif %}
-            {% endwith %}
-            <button type="button"
-              class="absolute top-2 right-2 w-8 h-8 rounded-full bg-white text-gray-500 text-sm flex items-center justify-center shadow"
-              aria-label="Ajouter aux favoris">♡</button>
-          </div>
-          <div class="p-3">
-            <h4 class="font-semibold text-gray-800 leading-tight h-12 overflow-hidden">{{ p.name }}</h4>
-            <!-- Conteneur en colonne avec une hauteur fixe de h-12 pour garantir que toutes les cartes gardent la même taille -->
-            <div class="mt-2 flex flex-col justify-end h-12">
-              {% if p.old_price %}
-              <span class="text-xs text-pink-400 line-through leading-none mb-0.5">{{ p.old_price }} TND</span>
-              {% else %}
-              <!-- Espacement invisible pour les produits sans réduction afin de maintenir l'alignement parfait -->
-              <span class="text-xs opacity-0 pointer-events-none leading-none mb-0.5">0 TND</span>
-              {% endif %}
-              <span class="text-2xl font-extrabold text-gray-900 leading-none">{{ p.price }} TND</span>
-            </div>
-          </div>
-        </a>
-      </div>
-      {% empty %}
-      <div class="text-gray-500 py-4">Aucun produit mis en avant.</div>
-      {% endfor %}
-    </div>
-  </section>
-
-  <!-- Product Grid -->
-  <section class="mb-8">
-    <h3 class="text-2xl font-bold tracking-tight mb-6">Aujourd'hui pour vous</h3>
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-      {% for product in products %}
-      <a href="{% url 'core:product_detail' product.pk %}"
-        class="block bg-white rounded-xl shadow hover:shadow-md transition overflow-hidden border border-gray-200">
-        <div class="relative bg-gray-100">
+  <div class="w-full grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-px bg-gray-200">
+    {% for product in products %}
+    <div class="bg-white group">
+      <a href="{% url 'core:product_detail' product.pk %}" class="block h-full">
+        <div class="relative overflow-hidden bg-gray-100">
           {% with product.images.all|first as first_img %}
           {% if first_img %}
-          <img src="{{ first_img.image.url }}" alt="{{ product.name }}" class="w-full h-52 object-cover">
+          <img src="{{ first_img.image.url }}" alt="{{ product.name }}"
+            class="w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+            style="aspect-ratio: 3 / 4;">
           {% else %}
           <img src="{% static 'core/images/product-placeholder.svg' %}" alt="{{ product.name }}"
-            class="w-full h-52 object-cover">
+            class="w-full object-cover" style="aspect-ratio: 3 / 4;">
           {% endif %}
           {% endwith %}
-          <button type="button"
-            class="absolute top-2 right-2 w-8 h-8 rounded-full bg-white text-gray-500 text-sm flex items-center justify-center shadow"
-            aria-label="Ajouter aux favoris">♡</button>
         </div>
-        <div class="p-3">
-          <h4 class="font-semibold text-gray-800 leading-tight h-12 overflow-hidden">{{ product.name }}</h4>
-          <div class="mt-2 flex items-baseline gap-2">
-            <span class="text-2xl font-extrabold text-gray-900">{{ product.price }} TND</span>
-            {% if product.old_price %}
-            <span class="text-sm text-pink-400 line-through">{{ product.old_price }} TND</span>
+        <!-- Zone de texte sous l'image -->
+        <div class="bg-[#eaeaea] p-4 flex flex-col justify-between h-28 border-t border-gray-200">
+          <div>
+            <h4
+              class="text-xs md:text-sm font-normal text-gray-800 leading-tight uppercase tracking-tight overflow-hidden"
+              style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; height: 2.5rem;">
+              {{ product.name }}
+            </h4>
+          </div>
+          <div class="mt-2 flex items-baseline justify-between">
+            <div class="flex items-baseline gap-2">
+              <span class="text-sm font-bold text-black">{{ product.price }} TND</span>
+              {% if product.old_price %}
+              <span class="text-xs text-pink-600 line-through font-medium">{{ product.old_price }} TND</span>
+              {% endif %}
+            </div>
+
+            <!-- Déclinaison de couleurs (Pastilles) -->
+            {% if product.pk|divisibleby:3 %}
+            <div class="flex items-center gap-1 text-xs text-gray-500">
+              <span class="inline-block w-3.5 h-3.5 bg-gray-850 border border-gray-300"></span>
+              <span class="text-[10px] font-medium">+3</span>
+            </div>
+            {% elif product.pk|divisibleby:2 %}
+            <div class="flex items-center gap-1 text-xs text-gray-500">
+              <span class="inline-block w-3.5 h-3.5 bg-[#3b82f6] border border-gray-300"></span>
+              <span class="text-[10px] font-medium">+4</span>
+            </div>
             {% endif %}
           </div>
         </div>
       </a>
-      {% endfor %}
     </div>
-  </section>
-
-</div>
+    {% endfor %}
+  </div>
+</section>
 
 {% endblock %}

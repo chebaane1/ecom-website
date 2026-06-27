@@ -1,0 +1,104 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Finaliser la commande — SKANDS{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto">
+  <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Finaliser la commande</h1>
+  <p class="text-gray-600 mb-8">Renseignez vos informations de livraison. Vous paierez à la réception de votre colis.</p>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <div class="lg:col-span-2 space-y-6">
+      <form method="post" class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sm:p-8">
+        {% csrf_token %}
+
+        <h2 class="text-lg font-semibold text-gray-900 mb-6">Informations de livraison</h2>
+
+        {% if form.non_field_errors %}
+        <div class="mb-4 p-3 rounded-lg bg-red-50 border border-red-200 text-red-800 text-sm">
+          {{ form.non_field_errors }}
+        </div>
+        {% endif %}
+
+        <div class="space-y-5">
+          {% for field in form %}
+          <div>
+            <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1.5">
+              {{ field.label }}
+              {% if field.field.required %}<span class="text-red-600">*</span>{% endif %}
+            </label>
+            {{ field }}
+            {% if field.errors %}
+            <p class="mt-1 text-sm text-red-600">{{ field.errors.0 }}</p>
+            {% endif %}
+          </div>
+          {% endfor %}
+        </div>
+
+        <div class="mt-8 p-4 rounded-lg bg-gray-50 border border-gray-200">
+          <div class="flex items-start gap-3">
+            <div class="flex-shrink-0 w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
+              <svg class="w-5 h-5 text-green-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/>
+              </svg>
+            </div>
+            <div>
+              <p class="font-semibold text-gray-900">Paiement à la livraison</p>
+              <p class="text-sm text-gray-600 mt-1">
+                Aucun paiement en ligne requis. Réglez votre commande en espèces au livreur lors de la réception.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <button
+          type="submit"
+          class="mt-8 w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-3.5 px-4 rounded-lg transition"
+        >
+          Confirmer la commande
+        </button>
+      </form>
+    </div>
+
+    <div class="lg:col-span-1">
+      <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sticky top-28">
+        <h2 class="text-lg font-semibold text-gray-900 mb-4">Votre commande</h2>
+
+        <ul class="space-y-4 max-h-80 overflow-y-auto border-b border-gray-200 pb-4 mb-4">
+          {% for item in cart %}
+          <li class="flex justify-between gap-3 text-sm">
+            <div class="min-w-0">
+              <p class="font-medium text-gray-900 truncate">{{ item.product.name }}</p>
+              <p class="text-gray-500">× {{ item.quantity }}</p>
+            </div>
+            <span class="font-medium text-gray-900 flex-shrink-0">{{ item.total_price }} TND</span>
+          </li>
+          {% endfor %}
+        </ul>
+
+        <div class="space-y-2 text-sm text-gray-700 mb-4">
+          <div class="flex justify-between">
+            <span>Sous-total</span>
+            <span>{{ cart.get_total_price }} TND</span>
+          </div>
+          <div class="flex justify-between">
+            <span>Livraison</span>
+            <span class="text-green-700 font-medium">Gratuite</span>
+          </div>
+        </div>
+
+        <div class="flex justify-between items-baseline pt-4 border-t border-gray-200">
+          <span class="font-semibold text-gray-900">Total à payer</span>
+          <span class="text-2xl font-bold text-gray-900">{{ cart.get_total_price }} TND</span>
+        </div>
+
+        <p class="text-xs text-gray-500 mt-3">Montant à régler au livreur</p>
+
+        <a href="{% url 'core:cart_detail' %}" class="block text-center text-sm text-gray-600 hover:text-gray-900 mt-4">
+          ← Retour au panier
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

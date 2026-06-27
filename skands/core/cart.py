@@ -43,6 +43,17 @@ class Cart:
             del self.cart[pid]
             self.save()
 
+    def update(self, product_id, quantity):
+        pid = str(product_id)
+        if pid not in self.cart:
+            return
+        quantity = int(quantity)
+        if quantity <= 0:
+            self.remove(product_id)
+        else:
+            self.cart[pid]['quantity'] = quantity
+            self.save()
+
     def clear(self):
         self.session[self.SESSION_KEY] = {}
         self.session.modified = True
@@ -52,6 +63,15 @@ class Cart:
         for item in self.cart.values():
             total += Decimal(item['price']) * int(item['quantity'])
         return total
+
+    def get_total_quantity(self):
+        return sum(int(item['quantity']) for item in self.cart.values())
+
+    def __len__(self):
+        return len(self.cart)
+
+    def __bool__(self):
+        return bool(self.cart)
 
     def __iter__(self):
         product_ids = self.cart.keys()

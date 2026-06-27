@@ -7,9 +7,29 @@ class CheckoutForm(forms.ModelForm):
     class Meta:
         model = Order
         fields = ('full_name', 'phone_number', 'address', 'city')
+        labels = {
+            'full_name': 'Nom complet',
+            'phone_number': 'Numéro de téléphone',
+            'address': 'Adresse de livraison',
+            'city': 'Gouvernorat',
+        }
         widgets = {
-            'address': forms.Textarea(attrs={'rows': 3}),
-            'city': forms.Select(choices=GOVERNORATES),
+            'full_name': forms.TextInput(attrs={
+                'class': 'w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 focus:outline-none transition',
+                'placeholder': 'Prénom et nom',
+            }),
+            'phone_number': forms.TextInput(attrs={
+                'class': 'w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 focus:outline-none transition',
+                'placeholder': 'Ex: 20 123 456',
+            }),
+            'address': forms.Textarea(attrs={
+                'rows': 3,
+                'class': 'w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 focus:outline-none transition',
+                'placeholder': 'Rue, numéro, quartier, code postal…',
+            }),
+            'city': forms.Select(attrs={
+                'class': 'w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 focus:outline-none transition bg-white',
+            }, choices=GOVERNORATES),
         }
 
 

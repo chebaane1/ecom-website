@@ -1,0 +1,85 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Commande confirmée — SKANDS{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto">
+  <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-8 sm:p-10 text-center">
+    <div class="w-16 h-16 mx-auto mb-6 rounded-full bg-green-100 flex items-center justify-center">
+      <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+      </svg>
+    </div>
+
+    <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Merci pour votre commande !</h1>
+    <p class="text-gray-600 mb-1">Votre commande a bien été enregistrée.</p>
+    <p class="text-sm text-gray-500 mb-8">
+      Référence : <span class="font-mono font-medium text-gray-800">{{ order.id_unique }}</span>
+    </p>
+
+    <div class="text-left bg-gray-50 rounded-lg border border-gray-200 p-6 mb-6">
+      <h2 class="font-semibold text-gray-900 mb-4">Détails de livraison</h2>
+      <dl class="space-y-2 text-sm">
+        <div class="flex flex-col sm:flex-row sm:gap-2">
+          <dt class="text-gray-500 sm:w-36 flex-shrink-0">Nom</dt>
+          <dd class="text-gray-900 font-medium">{{ order.full_name }}</dd>
+        </div>
+        <div class="flex flex-col sm:flex-row sm:gap-2">
+          <dt class="text-gray-500 sm:w-36 flex-shrink-0">Téléphone</dt>
+          <dd class="text-gray-900 font-medium">{{ order.phone_number }}</dd>
+        </div>
+        <div class="flex flex-col sm:flex-row sm:gap-2">
+          <dt class="text-gray-500 sm:w-36 flex-shrink-0">Adresse</dt>
+          <dd class="text-gray-900">{{ order.address }}</dd>
+        </div>
+        <div class="flex flex-col sm:flex-row sm:gap-2">
+          <dt class="text-gray-500 sm:w-36 flex-shrink-0">Gouvernorat</dt>
+          <dd class="text-gray-900">{{ order.get_city_display }}</dd>
+        </div>
+      </dl>
+    </div>
+
+    <div class="text-left bg-gray-50 rounded-lg border border-gray-200 p-6 mb-6">
+      <h2 class="font-semibold text-gray-900 mb-4">Articles commandés</h2>
+      <ul class="space-y-3">
+        {% for item in order.items.all %}
+        <li class="flex justify-between gap-4 text-sm">
+          <div>
+            <p class="font-medium text-gray-900">{{ item.product.name }}</p>
+            <p class="text-gray-500">× {{ item.quantity }} · {{ item.price }} TND</p>
+          </div>
+          <span class="font-medium text-gray-900 flex-shrink-0">{{ item.quantity }} × {{ item.price }} TND</span>
+        </li>
+        {% endfor %}
+      </ul>
+
+      <div class="mt-4 pt-4 border-t border-gray-200 flex justify-between items-baseline">
+        <span class="font-semibold text-gray-900">Total</span>
+        <span class="text-xl font-bold text-gray-900">{{ order.total_amount }} TND</span>
+      </div>
+    </div>
+
+    <div class="p-4 rounded-lg bg-amber-50 border border-amber-200 text-left mb-8">
+      <p class="font-semibold text-amber-900">Paiement à la livraison</p>
+      <p class="text-sm text-amber-800 mt-1">
+        Préparez <strong>{{ order.total_amount }} TND</strong> en espèces. Notre équipe vous contactera par téléphone pour confirmer la livraison.
+      </p>
+    </div>
+
+    <div class="flex flex-col sm:flex-row gap-3 justify-center">
+      <a
+        href="{% url 'core:product_list' %}"
+        class="inline-block bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-6 rounded-lg transition"
+      >
+        Continuer mes achats
+      </a>
+      <a
+        href="{% url 'core:home' %}"
+        class="inline-block border border-gray-300 hover:border-gray-400 text-gray-800 font-semibold py-3 px-6 rounded-lg transition"
+      >
+        Retour à l'accueil
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}

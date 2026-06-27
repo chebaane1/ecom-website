@@ -3,6 +3,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.db import transaction
 from django.db.models import Sum, Q
 
 from .models import Product, Order, OrderItem, ProductImage
@@ -233,6 +234,18 @@ def cart_remove(request, product_id):
     return redirect(reverse('core:cart_detail'))
 
 
+def cart_update(request, product_id):
+    if request.method == 'POST':
+        cart = Cart(request)
+        try:
+            quantity = int(request.POST.get('quantity', 1))
+        except (TypeError, ValueError):
+            quantity = 1
+        cart.update(product_id, quantity)
+        messages.success(request, 'Panier mis à jour.')
+    return redirect(reverse('core:cart_detail'))
+
+
 def cart_detail(request):
     cart = Cart(request)
     return render(request, 'core/cart_detail.html', {'cart': cart})
@@ -240,27 +253,30 @@ def cart_detail(request):
 
 def checkout(request):
     cart = Cart(request)
+    if not cart:
+        messages.warning(request, 'Votre panier est vide.')
+        return redirect(reverse('core:cart_detail'))
+
     if request.method == 'POST':
         form = CheckoutForm(request.POST)
         if form.is_valid():
-            order = form.save(commit=False)
-            order.total_amount = cart.get_total_price()
-            order.save()
-            # create order items
-            for item in cart:
-                OrderItem.objects.create(
-                    order=order,
-                    product=item['product'],
-                    quantity=int(item['quantity']),
-                    price=Decimal(item['price']),
-                    selected_size=item.get('selected_size', ''),
-                    selected_color=item.get('selected_color', ''),
-                )
-            cart.clear()
+            with transaction.atomic():
+                order = form.save(commit=False)
+                order.total_amount = cart.get_total_price()
+                order.save()
+                for item in cart:
+                    OrderItem.objects.create(
+                        order=order,
+                        product=item['product'],
+                        quantity=int(item['quantity']),
+                        price=Decimal(item['price']),
+                        selected_size=item.get('selected_size', ''),
+                        selected_color=item.get('selected_color', ''),
+                    )
+                cart.clear()
             messages.success(request, 'Commande passée avec succès. Nous vous contacterons pour la livraison.')
             return redirect(reverse('core:order_success', args=[order.id_unique]))
-        else:
-            messages.error(request, 'Veuillez corriger les erreurs dans le formulaire.')
+        messages.error(request, 'Veuillez corriger les erreurs dans le formulaire.')
     else:
         form = CheckoutForm()
     return render(request, 'core/checkout.html', {'cart': cart, 'form': form})
@@ -290,8 +306,9 @@ def order_update(request, pk):
 
 
 def sales_summary(request):
-    total = Order.objects.aggregate(total_sales=Sum('total_amount'))['total_sales'] or Decimal('0.00')
-    count = Order.objects.count()
+    delivered = Order.objects.filter(status=Order.STATUS_DELIVERED)
+    total = delivered.aggregate(total_sales=Sum('total_amount'))['total_sales'] or Decimal('0.00')
+    count = delivered.count()
     return render(request, 'core/manager/summary.html', {'total_sales': total, 'order_count': count})
 
 

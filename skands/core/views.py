@@ -166,13 +166,13 @@ def home_v2(request):
         {
             'name': 'Robes',
             'subtitle': 'Élégance fluide pour toutes vos occasions',
-            'image': 'core/images/robes_banner.png',
+            'image': 'core/images/robes_banner.jpg',
             'url': '/products/?q=robe'
         },
         {
             'name': 'Tops',
             'subtitle': 'Des hauts modernes et essentiels du quotidien',
-            'image': 'core/images/tops_banner.png',
+            'image': 'core/images/tops_banner.jpg',
             'url': '/products/?q=top'
         },
         {
